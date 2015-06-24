@@ -14,10 +14,7 @@
             });
         });
         $("#readReport").click(function () {
-            $.ajax({
-                url: "/api/Reports",
-                type: "GET"
-            });
+            $.getJSON("/api/Reports");
         });
     </script>
 }

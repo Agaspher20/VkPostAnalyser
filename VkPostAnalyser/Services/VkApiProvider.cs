@@ -14,15 +14,13 @@ namespace VkPostAnalyser.Services
                 {
                     LikesCount = 384,
                     PostId = "3",
-                    SignsCount = 1024,
-                    UserId = userId
+                    SignsCount = 1024
                 },
                 new PostInfo
                 {
                     LikesCount = 384,
                     PostId = "7",
-                    SignsCount = 1024,
-                    UserId = userId
+                    SignsCount = 1024
                 }
             });
             IEnumerable<PostInfo> postInfos = await postsTask;

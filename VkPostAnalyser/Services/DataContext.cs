@@ -9,5 +9,7 @@ namespace VkPostAnalyser.Services
         {}
 
         public DbSet<PostInfo> PostInfos { get; set; }
+
+        public DbSet<UserReport> UserReports { get; set; }
     }
 }

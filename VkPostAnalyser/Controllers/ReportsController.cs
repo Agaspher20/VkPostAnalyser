@@ -17,13 +17,11 @@ namespace VkPostAnalyser.Controllers
             _reportService = reportService;
         }
 
-        [HttpGet]
-        public IEnumerable<UserReport> Get(string id)
+        public IEnumerable<UserReport> Get()
         {
-            return _reportService.RetrieveReports();
+            return _reportService.RetrieveReports(null, null, 10);
         }
 
-        [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]string id)
         {
             UserReport report;

@@ -16,12 +16,17 @@ namespace VkPostAnalyser.Services
             }
         }
 
-        public void SavePosts(IEnumerable<PostInfo> postInfos)
+        public IQueryable<UserReport> UserReports
         {
-            foreach (var post in postInfos)
+            get
             {
-                _dataContext.PostInfos.Add(post);
+                return _dataContext.UserReports.Include("PostInfos");
             }
+        }
+
+        public void SaveReport(UserReport report)
+        {
+            _dataContext.UserReports.Add(report);
             _dataContext.SaveChanges();
         }
     }

@@ -8,6 +8,8 @@ namespace VkPostAnalyser.Services
     {
         IQueryable<PostInfo> PostInfos { get; }
 
-        void SavePosts(IEnumerable<PostInfo> postInfos);
+        IQueryable<UserReport> UserReports { get; }
+
+        void SaveReport(UserReport report);
     }
 }

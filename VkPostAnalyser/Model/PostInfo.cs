@@ -7,16 +7,13 @@ namespace VkPostAnalyser.Model
     {
         [Key]
         public long Id { get; set; }
+
+        public long ReportId { get; set; }
         [Required]
         public string PostId { get; set; }
-        public string AuthorId { get; set; }
-        [Required]
-        public string UserId { get; set; }
         [Required]
         public int SignsCount { get; set; }
         [Required]
         public int LikesCount { get; set; }
-        [Required]
-        public DateTime CreationDate { get; set; }
     }
 }

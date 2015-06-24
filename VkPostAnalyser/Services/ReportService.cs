@@ -8,7 +8,7 @@ namespace VkPostAnalyser.Services
 {
     public interface IReportService
     {
-        IEnumerable<UserReport> RetrieveReports(string authorId = null);
+        IEnumerable<UserReport> RetrieveReports(string authorId, DateTime? lastDate, int pageSize);
 
         Task<UserReport> CreateReportAsync(string userId, string authorId = null);
     }
@@ -24,38 +24,35 @@ namespace VkPostAnalyser.Services
             _socialApiProvider = socialApiProvider;
         }
 
-        public IEnumerable<UserReport> RetrieveReports(string authorId)
+        public IEnumerable<UserReport> RetrieveReports(string authorId, DateTime? lastDate, int pageSize)
         {
-            var postInfosQuery = _repository.PostInfos;
+            var reportsQuery = _repository.UserReports;
             if (authorId != null)
             {
-                postInfosQuery = postInfosQuery
-                    .Where(pi => pi.AuthorId == authorId);
+                reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId);
             }
-            return postInfosQuery.GroupBy(pi => new { pi.CreationDate, pi.UserId, pi.AuthorId }, (k, pig) => new UserReport
+            if (lastDate.HasValue)
             {
-                PostInfos = pig,
-                CreationDate = k.CreationDate,
-                UserId = k.UserId,
-                AuthorId = k.AuthorId
-            }).ToList();
+                reportsQuery = reportsQuery.Where(r => r.CreationDate < lastDate.Value);
+            }
+
+            return reportsQuery.Take(pageSize)
+                .OrderBy(r => r.CreationDate).ToList();
         }
 
         public async Task<UserReport> CreateReportAsync(string userId, string authorId)
         {
             DateTime currentDate = DateTime.Now;
             IEnumerable<PostInfo> posts = await _socialApiProvider.RetrievePostInfosAsync(userId);
-            foreach(var post in posts) {
-                post.CreationDate = currentDate;
-                post.AuthorId = authorId;
-            }
-            _repository.SavePosts(posts);
-            return new UserReport
+            var userReport = new UserReport
             {
-                PostInfos = posts,
+                AuthorId = authorId,
+                CreationDate = currentDate,
                 UserId = userId,
-                AuthorId = authorId
+                PostInfos = posts.ToList()
             };
+            _repository.SaveReport(userReport);
+            return userReport;
         }
     }
 }
