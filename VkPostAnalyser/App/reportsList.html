@@ -1,0 +1,18 @@
+﻿<div data-ng-controller="reportsListController as vm">
+    <div class="row" data-ng-form="orderReportForm">
+        <div class="col-md-4"><label for="userId">User id:</label></div>
+        <div class="col-md-8"><input type="text" name="userId" id="userId" required="required" data-ng-model="vm.userId" /></div>
+    </div>
+    <div class="row" data-ng-show="orderReportForm.$invalid">
+        <ul>
+            <li data-ng-show="orderReportForm.userId.$dirty && orderReportForm.userId.$invalid && orderReportForm.userId.$error.required">User Id is required</li>
+        </ul>
+    </div>
+    <div class="row">
+        <button data-ng-click="vm.orderReport()" data-ng-disabled="orderReportForm.$invalid">Order New Report</button>
+    </div>
+    <div class="row" data-ng-repeat="report in vm.reports">
+        <div class="row">User Id: {{report.UserId}}</div>
+        <div class="row" data-chart-view="report"></div>
+    </div>
+</div>

@@ -17,17 +17,21 @@ namespace VkPostAnalyser.Controllers
             _reportService = reportService;
         }
 
-        public IEnumerable<UserReport> Get()
+        public ReportsViewModel Get(DateTime? lastDate = null, int pageSize = 10, bool mineOnly = false)
         {
-            return _reportService.RetrieveReports(null, null, 10);
+            return _reportService.RetrieveReports(null, lastDate, pageSize);
         }
 
-        public async Task<IHttpActionResult> Post([FromBody]string id)
+        public async Task<IHttpActionResult> Post(ReportOrder order)
         {
             UserReport report;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
-                report = await _reportService.CreateReportAsync(id);
+                report = await _reportService.CreateReportAsync(order.UserId);
             }
             catch (DbEntityValidationException exc)
             {

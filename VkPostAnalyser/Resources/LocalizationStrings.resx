@@ -123,4 +123,7 @@
   <data name="Feed" xml:space="preserve">
     <value>Feed</value>
   </data>
+  <data name="UserIdRequired" xml:space="preserve">
+    <value>The UserId is required.</value>
+  </data>
 </root>

@@ -77,5 +77,14 @@ namespace VkPostAnalyser.Resources {
                 return ResourceManager.GetString("Feed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The UserId is required..
+        /// </summary>
+        public static string UserIdRequired {
+            get {
+                return ResourceManager.GetString("UserIdRequired", resourceCulture);
+            }
+        }
     }
 }

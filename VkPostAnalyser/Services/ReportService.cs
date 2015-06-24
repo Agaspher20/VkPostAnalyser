@@ -8,7 +8,7 @@ namespace VkPostAnalyser.Services
 {
     public interface IReportService
     {
-        IEnumerable<UserReport> RetrieveReports(string authorId, DateTime? lastDate, int pageSize);
+        ReportsViewModel RetrieveReports(string authorId, DateTime? lastDate, int pageSize);
 
         Task<UserReport> CreateReportAsync(string userId, string authorId = null);
     }
@@ -24,7 +24,7 @@ namespace VkPostAnalyser.Services
             _socialApiProvider = socialApiProvider;
         }
 
-        public IEnumerable<UserReport> RetrieveReports(string authorId, DateTime? lastDate, int pageSize)
+        public ReportsViewModel RetrieveReports(string authorId, DateTime? lastDate, int pageSize)
         {
             var reportsQuery = _repository.UserReports;
             if (authorId != null)
@@ -36,8 +36,13 @@ namespace VkPostAnalyser.Services
                 reportsQuery = reportsQuery.Where(r => r.CreationDate < lastDate.Value);
             }
 
-            return reportsQuery.Take(pageSize)
-                .OrderBy(r => r.CreationDate).ToList();
+            var model = new ReportsViewModel
+            {
+                Reports = reportsQuery.OrderByDescending(r => r.CreationDate).Take(pageSize).ToList()
+            };
+            model.LastDate = model.Reports.Max(r => r.CreationDate);
+
+            return model;
         }
 
         public async Task<UserReport> CreateReportAsync(string userId, string authorId)

@@ -7,7 +7,7 @@
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body data-ng-app="postAnalyser">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -19,13 +19,17 @@
                 @Html.ActionLink(LocalizationStrings.ApplicationName, "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav"></ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Main</a></li>
+                    <li><a href="#MyReports">My Reports</a></li>
+                </ul>
             </div>
         </div>
     </div>
 
     <div class="container body-content">
         <h2>@ViewBag.Title</h2>
+        <div data-ng-view=""></div>
         @RenderBody()
         <hr />
         <footer>
@@ -35,6 +39,9 @@
 
     <script src="~/Scripts/jquery-2.1.4.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/Scripts/angular-route.js"></script>
+    <script src="~/App/app.js"></script>
     @RenderSection("Scripts", false)
 </body>
 </html>
