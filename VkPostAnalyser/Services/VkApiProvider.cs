@@ -12,15 +12,21 @@ namespace VkPostAnalyser.Services
             {
                 new PostInfo
                 {
-                    LikesCount = 384,
+                    LikesCount = 184,
                     PostId = "3",
-                    SignsCount = 1024
+                    SignsCount = 512
                 },
                 new PostInfo
                 {
                     LikesCount = 384,
                     PostId = "7",
                     SignsCount = 1024
+                },
+                new PostInfo
+                {
+                    LikesCount = 404,
+                    PostId = "17",
+                    SignsCount = 1224
                 }
             });
             IEnumerable<PostInfo> postInfos = await postsTask;

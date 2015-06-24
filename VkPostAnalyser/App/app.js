@@ -1,4 +1,4 @@
-﻿(function (angular) {
+﻿(function (angular, c3, d3) {
     'use strict';
     var postAnalyser = angular.module('postAnalyser', ["ngRoute"]);
     postAnalyser.config(['$routeProvider', function ($routeProvider) {
@@ -23,14 +23,38 @@
             replace: false,
             restrict: 'A',
             scope: {
-                chartView: "="
+                chartView: "=",
+                chartWidth: "=",
+                chartHeight: "="
             },
             link: function (scope, element) {
-                var report = scope.chartView;
-                var p = $("<p>");
-                p.append(report.UserId);
-                element.append(p);
+                var chartData = scope.chartView,
+                    xAxisData,
+                    yAxisData,
+                    chart;
+                if (!chartData) {
+                    return;
+                }
+                xAxisData = chartData.map(function (pi) {
+                    return pi.SignsCount;
+                });
+                yAxisData = chartData.map(function (pi) {
+                    return pi.LikesCount;
+                });
+                xAxisData.unshift("x");
+                yAxisData.unshift("Likes Count");
+                chart = c3.generate({
+                    bindto: element.get(0),
+                    data: {
+                        x: "x",
+                        columns: [
+                            xAxisData,
+                            yAxisData
+                        ],
+                        type: "spline"
+                    }
+                });
             }
         };
     });
-}(angular));
+}(angular, c3, d3));
