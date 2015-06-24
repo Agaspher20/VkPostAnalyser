@@ -1,0 +1,14 @@
+*.suo
+packages/
+VkPostAnalyser/App_Data/
+VkPostAnalyser/bin/
+VkPostAnalyser/Scripts/
+*.user
+VkPostAnalyser/fonts/
+VkPostAnalyser/obj/
+VkPostAnalyser/Content/bootstrap-theme.css
+VkPostAnalyser/Content/bootstrap-theme.css.map
+VkPostAnalyser/Content/bootstrap-theme.min.css
+VkPostAnalyser/Content/bootstrap.css
+VkPostAnalyser/Content/bootstrap.css.map
+VkPostAnalyser/Content/bootstrap.min.css

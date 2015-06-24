@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = LocalizationStrings.Feed;
+}
+<button id="createReport">Create Report</button>
+<button id="readReport">Read Reports</button>
+@section Scripts {
+    <script type="text/javascript">
+        $("#createReport").click(function () {
+            $.ajax({
+                url: "/api/Reports",
+                type: "POST",
+                data: "15",
+                contentType: "application/json"
+            });
+        });
+        $("#readReport").click(function () {
+            $.ajax({
+                url: "/api/Reports",
+                type: "GET"
+            });
+        });
+    </script>
+}
