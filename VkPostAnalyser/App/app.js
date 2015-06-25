@@ -7,15 +7,41 @@
         });
     }]);
     postAnalyser.controller("reportsListController", ["$scope", "$http", "$routeParams", function ($scope, $http, $routeParams) {
-        var vm = this, myReports = !!$routeParams.myReports;
-        $http.get("/api/Reports?mineOnly=" + myReports).then(function (response) {
-            vm.reports = response.data.Reports;
-        });
+        var vm = this, myReports = !!$routeParams.myReports, retrieveReports = function (lastDate, firstDate) {
+            var query = "/api/Reports?mineOnly=" + myReports;
+            if (firstDate) {
+                query += "&firstDate=" + firstDate;
+            }
+            if (lastDate) {
+                query += "&lastDate=" + lastDate;
+            }
+            vm.dataLoading = true;
+            $http.get(query).then(function (response) {
+                if (!vm.firstDate) {
+                    vm.firstDate = response.data.FirstDate;
+                }
+                if (!firstDate) {
+                    vm.hasMore = response.data.HasMore;
+                    vm.reports = vm.reports ? vm.reports.concat(response.data.Reports) : response.data.Reports;
+                    vm.lastDate = response.data.LastDate;
+                } else if(response.data.Reports.length > 0) {
+                    vm.reports = vm.reports ? response.data.Reports.concat(vm.reports) : response.data.Reports;
+                }
+                vm.dataLoading = false;
+            });
+        };
+        retrieveReports();
         vm.orderReport = function () {
             $http.post("/api/Reports", { UserAlias: vm.userAlias }).then(function (response) {
                 vm.reports.unshift(response.data);
             });
         }
+        vm.update = function () {
+            retrieveReports(null, vm.firstDate);
+        };
+        vm.loadMore = function () {
+            retrieveReports(vm.lastDate);
+        };
         return vm;
     }]);
     postAnalyser.directive("chartView", function () {

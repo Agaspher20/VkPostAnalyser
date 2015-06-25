@@ -17,9 +17,9 @@ namespace VkPostAnalyser.Controllers
             _reportService = reportService;
         }
 
-        public ReportsViewModel Get(DateTime? lastDate = null, int pageSize = 10, bool mineOnly = false)
+        public ReportsViewModel Get(DateTime? firstDate = null, DateTime? lastDate = null, int pageSize = 5, bool mineOnly = false)
         {
-            return _reportService.RetrieveReports(null, lastDate, pageSize);
+            return _reportService.RetrieveReports(null, firstDate, lastDate, pageSize);
         }
 
         public async Task<IHttpActionResult> Post(ReportOrder order)

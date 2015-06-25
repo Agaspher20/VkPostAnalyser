@@ -10,6 +10,7 @@
     </div>
     <div class="row">
         <button data-ng-click="vm.orderReport()" data-ng-disabled="orderReportForm.$invalid">Order New Report</button>
+        <button data-ng-click="vm.update()">Update</button>
     </div>
     <div class="row" data-ng-repeat="report in vm.reports">
         <div class="row">User Alias: {{report.UserAlias}}</div>
@@ -17,5 +18,8 @@
         <div class="row">
             <a href="{{report.MostPopular.Link}}">Most popular post with {{report.MostPopular.LikesCount}} likes</a>
         </div>
+    </div>
+    <div class="row">
+        <button data-ng-click="vm.loadMore()" data-ng-show="vm.hasMore">Load more</button>
     </div>
 </div>

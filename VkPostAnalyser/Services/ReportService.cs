@@ -8,7 +8,7 @@ namespace VkPostAnalyser.Services
 {
     public interface IReportService
     {
-        ReportsViewModel RetrieveReports(string authorId, DateTime? lastDate, int pageSize);
+        ReportsViewModel RetrieveReports(string authorId, DateTime? firstDate, DateTime? lastDate, int pageSize);
 
         Task<UserReport> CreateReportAsync(string userAlias, string authorId = null);
     }
@@ -24,7 +24,7 @@ namespace VkPostAnalyser.Services
             _socialApiProvider = socialApiProvider;
         }
 
-        public ReportsViewModel RetrieveReports(string authorId, DateTime? lastDate, int pageSize)
+        public ReportsViewModel RetrieveReports(string authorId, DateTime? firstDate, DateTime? lastDate, int pageSize)
         {
             var reportsQuery = _repository.UserReports;
             if (authorId != null)
@@ -35,13 +35,20 @@ namespace VkPostAnalyser.Services
             {
                 reportsQuery = reportsQuery.Where(r => r.CreationDate < lastDate.Value);
             }
+            if (firstDate.HasValue)
+            {
+                reportsQuery = reportsQuery.Where(r => r.CreationDate > firstDate.Value);
+            }
 
+            var reports = reportsQuery.OrderByDescending(r => r.CreationDate).Take(pageSize).ToList();
             var model = new ReportsViewModel
             {
-                Reports = reportsQuery.OrderByDescending(r => r.CreationDate).Take(pageSize).ToList()
+                Reports = reports
             };
-            model.LastDate = model.Reports.Any() ? (DateTime?)model.Reports.Max(r => r.CreationDate) : null;
-            foreach (var report in model.Reports)
+            model.FirstDate = reports.Any() ? (DateTime?)reports.Max(r => r.CreationDate) : null;
+            model.LastDate = reports.Any() ? (DateTime?)reports.Min(r => r.CreationDate) : null;
+            model.HasMore = reports.Count == pageSize;
+            foreach (var report in reports)
             {
                 InitUserReport(report);
             }
