@@ -31,11 +31,11 @@ namespace VkPostAnalyser.Controllers
             }
             try
             {
-                report = await _reportService.CreateReportAsync(order.UserId);
+                report = await _reportService.CreateReportAsync(order.UserAlias);
             }
             catch (DbEntityValidationException exc)
             {
-                return InternalServerError();
+                return InternalServerError(exc);
             }
             string uri = Url.Link("DefaultApi", new { id = report.AuthorId });
             return Created<UserReport>(uri, report);

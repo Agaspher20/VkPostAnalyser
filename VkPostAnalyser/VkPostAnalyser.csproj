@@ -1005,6 +1005,7 @@
     <Compile Include="Services\DataContext.cs" />
     <Compile Include="Services\IRepository.cs" />
     <Compile Include="Services\ISocialApiProvider.cs" />
+    <Compile Include="Services\PostsFilter.cs" />
     <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\EFRepository.cs" />
     <Compile Include="Services\VkApi\AuthProvider\IVkAuthenticationProvider.cs" />

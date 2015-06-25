@@ -15,6 +15,7 @@ namespace VkPostAnalyser.Model
         [Required]
         public int LikesCount { get; set; }
 
+        [NotMapped]
         public int OwnerId { get; set; }
 
         [NotMapped]

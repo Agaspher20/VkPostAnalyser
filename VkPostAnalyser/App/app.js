@@ -12,7 +12,7 @@
             vm.reports = response.data.Reports;
         });
         vm.orderReport = function () {
-            $http.post("/api/Reports", { userId: vm.userId }).then(function (response) {
+            $http.post("/api/Reports", { UserAlias: vm.userAlias }).then(function (response) {
                 vm.reports.unshift(response.data);
             });
         }

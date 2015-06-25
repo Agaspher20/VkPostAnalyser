@@ -27,8 +27,10 @@ namespace VkPostAnalyser.Model
 
         public string AuthorId { get; set; }
 
+        public long? UserId { get; set; }
+
         [Required]
-        public string UserId { get; set; }
+        public string UserAlias { get; set; }
 
         [Index]
         [Required]

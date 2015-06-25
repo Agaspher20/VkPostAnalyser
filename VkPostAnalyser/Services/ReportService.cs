@@ -10,7 +10,7 @@ namespace VkPostAnalyser.Services
     {
         ReportsViewModel RetrieveReports(string authorId, DateTime? lastDate, int pageSize);
 
-        Task<UserReport> CreateReportAsync(string userId, string authorId = null);
+        Task<UserReport> CreateReportAsync(string userAlias, string authorId = null);
     }
 
     public class ReportService : IReportService
@@ -48,16 +48,18 @@ namespace VkPostAnalyser.Services
             return model;
         }
 
-        public async Task<UserReport> CreateReportAsync(string userId, string authorId)
+        public async Task<UserReport> CreateReportAsync(string userAlias, string authorId)
         {
             DateTime currentDate = DateTime.Now;
-            IEnumerable<PostInfo> posts = await _socialApiProvider.RetrievePostInfosAsync(userId);
+            IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userAlias);
+            int? ownerId = allPosts.Any() ? (int?)allPosts.First().OwnerId : null;
             var userReport = new UserReport
             {
                 AuthorId = authorId,
                 CreationDate = currentDate,
-                UserId = userId,
-                PostInfos = posts.ToList()
+                UserId = ownerId,
+                UserAlias = userAlias,
+                PostInfos = allPosts.FilterPosts()
             };
             _repository.SaveReport(userReport);
             InitUserReport(userReport);
@@ -68,7 +70,7 @@ namespace VkPostAnalyser.Services
         {
             if (report.MostPopular != null)
             {
-                report.MostPopular.Link = _socialApiProvider.BuildPostUrl(report.MostPopular);
+                report.MostPopular.Link = _socialApiProvider.BuildPostUrl(report, report.MostPopular);
             }
         }
     }

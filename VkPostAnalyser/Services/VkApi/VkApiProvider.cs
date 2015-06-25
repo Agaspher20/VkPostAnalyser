@@ -13,7 +13,7 @@ namespace VkPostAnalyser.Services.VkApi
         private const int PageSize = 100; // Max count of posts which wall.get returns
         private const string BaseUrl = "http://vk.com";
 
-        public async Task<IEnumerable<PostInfo>> RetrievePostInfosAsync(string userId)
+        public async Task<IList<PostInfo>> RetrievePostInfosAsync(string userAlias)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace VkPostAnalyser.Services.VkApi
                 do
                 {
                     int pageCount = 0;
-                    EntityList<Post> posts = await api.Wall.Get(domain: userId, offset: offset, count: PageSize);
+                    EntityList<Post> posts = await api.Wall.Get(domain: userAlias, offset: offset, count: PageSize);
                     if (postInfos == null)
                     {
                         postInfos = new List<PostInfo>(posts.Count);
@@ -53,9 +53,9 @@ namespace VkPostAnalyser.Services.VkApi
             }
         }
 
-        public string BuildPostUrl(PostInfo post)
+        public string BuildPostUrl(UserReport report, PostInfo post)
         {
-            return BaseUrl + "/wall" + post.OwnerId + "_" + post.PostId;
+            return BaseUrl + "/wall" + report.UserId.Value + "_" + post.PostId;
         }
     }
 }
