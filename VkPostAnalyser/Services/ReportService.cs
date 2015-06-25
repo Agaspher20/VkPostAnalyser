@@ -40,8 +40,11 @@ namespace VkPostAnalyser.Services
             {
                 Reports = reportsQuery.OrderByDescending(r => r.CreationDate).Take(pageSize).ToList()
             };
-            model.LastDate = model.Reports.Max(r => r.CreationDate);
-
+            model.LastDate = model.Reports.Any() ? (DateTime?)model.Reports.Max(r => r.CreationDate) : null;
+            foreach (var report in model.Reports)
+            {
+                InitUserReport(report);
+            }
             return model;
         }
 
@@ -57,7 +60,16 @@ namespace VkPostAnalyser.Services
                 PostInfos = posts.ToList()
             };
             _repository.SaveReport(userReport);
+            InitUserReport(userReport);
             return userReport;
+        }
+
+        private void InitUserReport(UserReport report)
+        {
+            if (report.MostPopular != null)
+            {
+                report.MostPopular.Link = _socialApiProvider.BuildPostUrl(report.MostPopular);
+            }
         }
     }
 }

@@ -4,3 +4,4 @@ VkPostAnalyser/App_Data/
 VkPostAnalyser/bin/
 *.user
 VkPostAnalyser/obj/
+VkPostAnalyser/Properties/PublishProfiles/

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Web.Http;
 using System.Web.Mvc;
 using VkPostAnalyser.Services;
+using VkPostAnalyser.Services.VkApi;
 
 namespace VkPostAnalyser
 {

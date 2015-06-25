@@ -50,8 +50,7 @@
                         columns: [
                             xAxisData,
                             yAxisData
-                        ],
-                        type: "spline"
+                        ]
                     }
                 });
             }

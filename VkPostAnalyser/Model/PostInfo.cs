@@ -8,12 +8,16 @@ namespace VkPostAnalyser.Model
         [Key]
         public long Id { get; set; }
 
-        public long ReportId { get; set; }
         [Required]
-        public string PostId { get; set; }
+        public long PostId { get; set; }
         [Required]
         public int SignsCount { get; set; }
         [Required]
         public int LikesCount { get; set; }
+
+        public int OwnerId { get; set; }
+
+        [NotMapped]
+        public string Link { get; set; }
     }
 }
