@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Infrastructure;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -71,14 +72,11 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                 // OAuth2 10.12 CSRF
                 GenerateCorrelationId(properties);
 
-                // comma separated
-                string scope = string.Join(",", Options.Scope);
-
                 string state = Options.StateDataFormat.Protect(properties);
 
                 Options.StoreState = state;
 
-                string authorizationEndpoint = VKToken.GetOAuthURL(appId: Options.ClientId, permissions: VKPermission.Wall, redirectURL: Uri.EscapeDataString(redirectUri));
+                string authorizationEndpoint = GetOAuthURL(appId: Options.ClientId, permissions: Options.Permissions, redirectURL: Uri.EscapeDataString(redirectUri));
 
                 Response.Redirect(authorizationEndpoint);
             }
@@ -124,7 +122,8 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                     {
                         grantIdentity = new ClaimsIdentity(grantIdentity.Claims, context.SignInAsAuthenticationType, grantIdentity.NameClaimType, grantIdentity.RoleClaimType);
                     }
-                    Context.Authentication.SignIn(context.Properties, grantIdentity);
+                    var authenticationManager = Context.Authentication;
+                    authenticationManager.SignIn(context.Properties, grantIdentity);
                 }
 
                 if (!context.IsRequestCompleted && context.RedirectUri != null)
@@ -179,7 +178,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                 string requestPrefix = Request.Scheme + Uri.SchemeDelimiter + Request.Host;
                 string redirectUri = requestPrefix + Request.PathBase + Options.CallbackPath;
 
-                //https://oauth.vk.com/access_token?client_id=APP_ID&client_secret=APP_SECRET&code=7a6fa4dff77a228eeda56603b8f53806c883f011c40b72630bb50df056f6479e52a&redirect_uri=REDIRECT_URI
                 string tokenRequest = TokenEndpoint + "?client_id=" + Options.ClientId +
                                       "&client_secret=" + Uri.EscapeDataString(Options.ClientSecret) +
                                       "&code=" + Uri.EscapeDataString(code) +
@@ -252,5 +250,15 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             }
             return new AuthenticationTicket(null, properties);
         }
+
+        private string GetOAuthURL(int appId, VKPermission permissions = VKPermission.None, string redirectURL = "https://oauth.vk.com/blank.html" ) { 
+             var testperm = Enum.GetValues(typeof (VKPermission)).OfType<VKPermission>() 
+                     .Where(a => a != VKPermission.None && a != VKPermission.Everything);
+            string permissionsValue = string.Join(",", testperm.Where(a => permissions.HasFlag(a)).Select(a => a.ToString().ToLowerInvariant()));
+             return string.Format(@"https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&response_type=code",
+                 appId,
+                 permissionsValue,
+                 redirectURL); 
+         }
     }
 }

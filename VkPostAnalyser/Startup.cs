@@ -8,10 +8,9 @@ namespace VkPostAnalyser
     {
         public void Configuration(IAppBuilder app)
         {
-            ConfigureAuth(app);
-
             var apiConfig = ConfigureWebApi();
             ConfigureDependencyInjection(app, apiConfig);
+            ConfigureAuth(app);
             app.UseWebApi(apiConfig);
         }
     }

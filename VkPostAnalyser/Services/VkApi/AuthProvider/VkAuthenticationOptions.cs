@@ -1,21 +1,22 @@
 ﻿using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
+using VkPostAnalyser.Services.Authentication;
+using VKSharp.Data.Api;
 
 namespace VkPostAnalyser.Services.VkApi.AuthProvider
 {
     public class VkAuthenticationOptions : AuthenticationOptions
     {
-        public const string DefaultAuthenticationType = "Vkontakte";
+        public const string VkAuthenticationType = "Vkontakte";
 
-        public VkAuthenticationOptions() : base(DefaultAuthenticationType)
+        public VkAuthenticationOptions()
+            : base(VkAuthenticationType)
         {
-            Caption = DefaultAuthenticationType;
+            Caption = VkAuthenticationType;
             CallbackPath = new PathString("/signin-vkontakte");
             AuthenticationMode = AuthenticationMode.Passive;
-            Scope = new List<string>();
             Version = "5.3";
             BackchannelTimeout = TimeSpan.FromSeconds(60);
         }
@@ -37,7 +38,7 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
         public IVkAuthenticationProvider Provider { get; set; }
         public ISecureDataFormat<AuthenticationProperties> StateDataFormat { get; set; }
         public string StoreState { get; set; }
-        public IList<string> Scope { get; set; }
+        public VKPermission Permissions { get; set; }
         public string Version { get; set; }
     }
 }

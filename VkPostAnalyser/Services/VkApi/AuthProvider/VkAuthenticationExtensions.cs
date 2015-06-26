@@ -1,6 +1,6 @@
 ﻿using Owin;
 using System;
-using System.Collections.Generic;
+using VKSharp.Data.Api;
 
 namespace VkPostAnalyser.Services.VkApi.AuthProvider
 {
@@ -16,18 +16,18 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             {
                 throw new ArgumentNullException("options");
             }
-            
-            app.Use(typeof (VkAuthenticationMiddleware), app, options);
+
+            app.Use(typeof(VkAuthenticationMiddleware), app, options);
             return app;
         }
-        
-        public static IAppBuilder UseVkontakteAuthentication(this IAppBuilder app, int clientId, string clientSecret, IList<string> scope = null)
+
+        public static IAppBuilder UseVkontakteAuthentication(this IAppBuilder app, int clientId, string clientSecret, VKPermission permissions)
         {
             return UseVkontakteAuthentication(app, new VkAuthenticationOptions
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret,
-                Scope = scope
+                Permissions = permissions
             });
         }
     }

@@ -15,8 +15,9 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
-        
-        public VkAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app, VkAuthenticationOptions options) : base(next, options)
+
+        public VkAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app, VkAuthenticationOptions options)
+            : base(next, options)
         {
             if (Options.ClientId <= 0)
             {
@@ -26,7 +27,7 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The '{0}' option must be provided.", "AppSecret"));
             }
-            
+
             _logger = app.CreateLogger<VkAuthenticationMiddleware>();
             
             if (Options.Provider == null)

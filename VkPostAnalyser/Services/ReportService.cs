@@ -15,18 +15,18 @@ namespace VkPostAnalyser.Services
 
     public class ReportService : IReportService
     {
-        private readonly IRepository _repository;
+        private readonly DataContext _dataContext;
         private readonly ISocialApiProvider _socialApiProvider;
 
-        public ReportService(IRepository repository, ISocialApiProvider socialApiProvider)
+        public ReportService(DataContext dataContext, ISocialApiProvider socialApiProvider)
         {
-            _repository = repository;
+            _dataContext = dataContext;
             _socialApiProvider = socialApiProvider;
         }
 
         public ReportsViewModel RetrieveReports(string authorId, DateTime? firstDate, DateTime? lastDate, int pageSize)
         {
-            var reportsQuery = _repository.UserReports;
+            IQueryable<UserReport> reportsQuery = _dataContext.UserReports.Include("PostInfos");
             if (authorId != null)
             {
                 reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId);
@@ -68,7 +68,8 @@ namespace VkPostAnalyser.Services
                 UserAlias = userAlias,
                 PostInfos = allPosts.FilterPosts()
             };
-            _repository.SaveReport(userReport);
+            _dataContext.UserReports.Add(userReport);
+            _dataContext.SaveChanges();
             InitUserReport(userReport);
             return userReport;
         }
