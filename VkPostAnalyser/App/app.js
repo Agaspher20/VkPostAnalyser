@@ -2,46 +2,77 @@
     'use strict';
     var postAnalyser = angular.module('postAnalyser', ["ngRoute"]);
     postAnalyser.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/:myReports?', {
+        $routeProvider.when('/:mineOnly?', {
             templateUrl: '/App/reportsList.html'
         });
     }]);
-    postAnalyser.controller("reportsListController", ["$scope", "$http", "$routeParams", function ($scope, $http, $routeParams) {
-        var vm = this, myReports = !!$routeParams.myReports, retrieveReports = function (lastDate, firstDate) {
-            var query = "/api/Reports?mineOnly=" + myReports;
-            if (firstDate) {
-                query += "&firstDate=" + firstDate;
+    postAnalyser.factory("dataContext", ["$http", "$q", function ($http) {
+        var retrieveReports = function (action, date, mineOnly) {
+            var query = "/api/Reports/" + action + "?mineOnly=" + mineOnly;
+            if (date) {
+                query += "&date=" + date;
             }
-            if (lastDate) {
-                query += "&lastDate=" + lastDate;
-            }
-            vm.dataLoading = true;
-            $http.get(query).then(function (response) {
-                if (!vm.firstDate) {
-                    vm.firstDate = response.data.FirstDate;
-                }
-                if (!firstDate) {
-                    vm.hasMore = response.data.HasMore;
-                    vm.reports = vm.reports ? vm.reports.concat(response.data.Reports) : response.data.Reports;
-                    vm.lastDate = response.data.LastDate;
-                } else if(response.data.Reports.length > 0) {
-                    vm.reports = vm.reports ? response.data.Reports.concat(vm.reports) : response.data.Reports;
-                }
-                vm.dataLoading = false;
+            return $http.get(query, { cache: false }).then(function (response) {
+                return response.data;
+            }, function (response) {
+                return $q.$reject(response);
             });
         };
-        retrieveReports();
-        vm.orderReport = function () {
-            $http.post("/api/Reports", { UserAlias: vm.userAlias }).then(function (response) {
-                vm.reports.unshift(response.data);
-            });
-        }
-        vm.update = function () {
-            retrieveReports(null, vm.firstDate);
+        return {
+            nextPage: function (lastDate, mineOnly) {
+                return retrieveReports("NextPage", lastDate, mineOnly);
+            },
+            newReports: function (firstDate, mineOnly) {
+                return retrieveReports("NewReports", firstDate, mineOnly)
+            },
+            postReport: function (userAlias) {
+                return $http.post("/api/Reports/Post", { UserAlias: userAlias }).then(function (response) {
+                    return response.data;
+                }, function (response) {
+                    return $q.$reject(response);
+                });
+            }
         };
+    }]);
+    postAnalyser.controller("reportsListController", ["$scope", "$routeParams", "dataContext", function ($scope, $routeParams, dataContext) {
+        var vm = this, mineOnly = !!$routeParams.mineOnly;
         vm.loadMore = function () {
-            retrieveReports(vm.lastDate);
+            vm.nextPageLoading = true;
+            dataContext.nextPage(vm.lastDate, mineOnly).then(function (model) {
+                if (!vm.firstDate) {
+                    vm.firstDate = model.FirstDate;
+                }
+                vm.reports = vm.reports ? vm.reports.concat(model.Reports) : model.Reports;
+                vm.hasMore = model.HasMore;
+                vm.lastDate = model.LastDate;
+                vm.nextPageLoading = false;
+            }, function () {
+                vm.nextPageLoading = false;
+            });
         };
+        vm.update = function () {
+            vm.newReportsLoading = true;
+            dataContext.newReports(vm.firstDate, mineOnly).then(function (model) {
+                if (!vm.lastDate) {
+                    vm.lastDate = model.LastDate;
+                }
+                if (vm.reports) {
+                    vm.reports = vm.reports ? model.Reports.concat(vm.reports) : model.Reports;
+                }
+                if (model.FirstDate) {
+                    vm.firstDate = model.FirstDate;
+                }
+                vm.newReportsLoading = false;
+            }, function () {
+                vm.newReportsLoading = false;
+            });
+        };
+        vm.orderReport = function () {
+            dataContext.postReport(vm.userAlias).then(function (report) {
+                vm.reports.unshift(report);
+            });
+        };
+        vm.loadMore();
         return vm;
     }]);
     postAnalyser.directive("chartView", function () {

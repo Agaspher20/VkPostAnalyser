@@ -16,11 +16,19 @@ namespace VkPostAnalyser.Controllers
             _reportService = reportService;
         }
 
-        public ReportsViewModel Get(DateTime? firstDate = null, DateTime? lastDate = null, int pageSize = 5, bool mineOnly = false)
+        [HttpGet]
+        public ReportsViewModel NextPage(DateTime? date = null, int pageSize = 5, bool mineOnly = false)
         {
-            return _reportService.RetrieveReports(null, firstDate, lastDate, pageSize);
+            return _reportService.NextReportsPage(null, date, pageSize);
         }
 
+        [HttpGet]
+        public ReportsViewModel NewReports(DateTime date, bool mineOnly = false)
+        {
+            return _reportService.RetrieveNewReports(null, date);
+        }
+
+        [HttpPost]
         public async Task<IHttpActionResult> Post(ReportOrder order)
         {
             UserReport report;

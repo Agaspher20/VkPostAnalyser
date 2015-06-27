@@ -8,7 +8,9 @@ namespace VkPostAnalyser.Services
 {
     public interface IReportService
     {
-        ReportsViewModel RetrieveReports(string authorId, DateTime? firstDate, DateTime? lastDate, int pageSize);
+        ReportsViewModel NextReportsPage(string authorId, DateTime? date, int pageSize);
+
+        ReportsViewModel RetrieveNewReports(string authorId, DateTime date);
 
         Task<UserReport> CreateReportAsync(string userAlias, string authorId = null);
     }
@@ -24,35 +26,34 @@ namespace VkPostAnalyser.Services
             _socialApiProvider = socialApiProvider;
         }
 
-        public ReportsViewModel RetrieveReports(string authorId, DateTime? firstDate, DateTime? lastDate, int pageSize)
+        public ReportsViewModel NextReportsPage(string authorId, DateTime? date, int pageSize)
         {
             IQueryable<UserReport> reportsQuery = _dataContext.UserReports.Include("PostInfos");
             if (authorId != null)
             {
                 reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId);
             }
-            if (lastDate.HasValue)
+            if (date.HasValue)
             {
-                reportsQuery = reportsQuery.Where(r => r.CreationDate < lastDate.Value);
+                reportsQuery = reportsQuery.Where(r => r.CreationDate < date.Value);
             }
-            if (firstDate.HasValue)
-            {
-                reportsQuery = reportsQuery.Where(r => r.CreationDate > firstDate.Value);
-            }
+            reportsQuery = reportsQuery.OrderByDescending(r => r.CreationDate).Take(pageSize);
 
-            var reports = reportsQuery.OrderByDescending(r => r.CreationDate).Take(pageSize).ToList();
-            var model = new ReportsViewModel
+            return BuildReportsModel(reportsQuery.ToList(), pageSize);
+        }
+
+        public ReportsViewModel RetrieveNewReports(string authorId, DateTime date)
+        {
+            IQueryable<UserReport> reportsQuery = _dataContext.UserReports.Include("PostInfos");
+            if (authorId != null)
             {
-                Reports = reports
-            };
-            model.FirstDate = reports.Any() ? (DateTime?)reports.Max(r => r.CreationDate) : null;
-            model.LastDate = reports.Any() ? (DateTime?)reports.Min(r => r.CreationDate) : null;
-            model.HasMore = reports.Count == pageSize;
-            foreach (var report in reports)
-            {
-                InitUserReport(report);
+                reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId);
             }
-            return model;
+            reportsQuery = reportsQuery
+                .Where(r => r.CreationDate > date)
+                .OrderByDescending(r => r.CreationDate);
+
+            return BuildReportsModel(reportsQuery.ToList());
         }
 
         public async Task<UserReport> CreateReportAsync(string userAlias, string authorId)
@@ -72,6 +73,25 @@ namespace VkPostAnalyser.Services
             _dataContext.SaveChanges();
             InitUserReport(userReport);
             return userReport;
+        }
+
+        private ReportsViewModel BuildReportsModel(IList<UserReport> reports, int pageSize = int.MaxValue)
+        {
+            var model = new ReportsViewModel
+            {
+                Reports = reports
+            };
+            if (reports.Any())
+            {
+                model.FirstDate = (DateTime?)reports.Max(r => r.CreationDate);
+                model.LastDate = (DateTime?)reports.Min(r => r.CreationDate);
+            }
+            model.HasMore = reports.Count == pageSize;
+            foreach (var report in reports)
+            {
+                InitUserReport(report);
+            }
+            return model;
         }
 
         private void InitUserReport(UserReport report)
