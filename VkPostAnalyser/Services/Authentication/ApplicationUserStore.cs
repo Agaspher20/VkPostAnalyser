@@ -28,7 +28,10 @@ namespace VkPostAnalyser.Services.Authentication
 
         public async Task<ApplicationUser> FindAsync(UserLoginInfo login)
         {
-            return await RetrieveUserFromExternalClaimIdentity(login);
+            return await RetrieveUserFromExternalClaimIdentity(new UserLoginInfo(
+                loginProvider: DefaultAuthenticationTypes.ExternalCookie,
+                providerKey: login.ProviderKey
+            ));
         }
 
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user)
@@ -46,7 +49,13 @@ namespace VkPostAnalyser.Services.Authentication
 
         public async Task<ApplicationUser> FindByIdAsync(int userId)
         {
-            return await RetrieveUserFromExternalClaimIdentity(null);
+            return await RetrieveUserFromExternalClaimIdentity(new UserLoginInfo(
+                loginProvider: DefaultAuthenticationTypes.ApplicationCookie,
+                providerKey: userId.ToString()
+            )) ?? await RetrieveUserFromExternalClaimIdentity(new UserLoginInfo(
+                loginProvider: DefaultAuthenticationTypes.ExternalCookie,
+                providerKey: userId.ToString()
+            ));//todo: implement to get from application store
         }
 
         public async Task<ApplicationUser> FindByNameAsync(string userName)
@@ -130,7 +139,7 @@ namespace VkPostAnalyser.Services.Authentication
 
         private async Task<ApplicationUser> RetrieveUserFromExternalClaimIdentity(UserLoginInfo login)
         {
-            var identity = await _authenticationManager.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
+            var identity = await _authenticationManager.GetExternalIdentityAsync(login.LoginProvider);
             if (identity != null)
             {
                 var applicationUser = new ApplicationUser { Id = -1 };

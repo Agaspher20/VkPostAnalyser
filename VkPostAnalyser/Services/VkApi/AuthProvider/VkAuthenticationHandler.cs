@@ -18,8 +18,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
     public class VkAuthenticationHandler : AuthenticationHandler<VkAuthenticationOptions>
     {
         private const string XmlSchemaString = "http://www.w3.org/2001/XMLSchema#string";
-        private const string TokenEndpoint = "https://oauth.vk.com/access_token";
-        private const string GraphApiEndpoint = "https://api.vk.com/method/";
 
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
@@ -161,7 +159,7 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                 string requestPrefix = Request.Scheme + Uri.SchemeDelimiter + Request.Host;
                 string redirectUri = requestPrefix + Request.PathBase + Options.CallbackPath;
 
-                string tokenRequest = TokenEndpoint + "?client_id=" + Options.ClientId +
+                string tokenRequest = VkConstants.TokenEndpoint + "?client_id=" + Options.ClientId +
                                       "&client_secret=" + Uri.EscapeDataString(Options.ClientSecret) +
                                       "&code=" + Uri.EscapeDataString(code) +
                                       "&redirect_uri=" + Uri.EscapeDataString(redirectUri);
@@ -176,7 +174,7 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                 string userid = JsonResponse["user_id"];
                 string email = JsonResponse["email"];
 
-                string userInfoLink = GraphApiEndpoint + "users.get.xml" +
+                string userInfoLink = VkConstants.GraphApiEndpoint + "users.get.xml" +
                                       "?user_ids=" + Uri.EscapeDataString(userid) +
                                       "&fields=" + Uri.EscapeDataString("nickname,screen_name,photo_50");
 

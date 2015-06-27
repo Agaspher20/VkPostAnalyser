@@ -1,23 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VkPostAnalyser.Model;
+using VkPostAnalyser.Services.Authentication;
+using VkPostAnalyser.Services.VkApi.AuthProvider;
 using VKSharp;
-using VKSharp.Data.Api;
 using VKSharp.Core.Entities;
-using System;
+using VKSharp.Data.Api;
 
 namespace VkPostAnalyser.Services.VkApi
 {
     public class VkApiProvider : ISocialApiProvider
     {
         private const int PageSize = 100; // Max count of posts which wall.get returns
-        private const string BaseUrl = "http://vk.com";
 
-        public async Task<IList<PostInfo>> RetrievePostInfosAsync(string userAlias)
+        public async Task<IList<PostInfo>> RetrievePostInfosAsync(string userAlias, ApplicationUser author)
         {
             try
             {
                 var api = new VKApi();
+                if (author != null)
+                {
+                    api.AddToken(new VKToken(author.Token, userId: author.Id));
+                }
                 List<PostInfo> postInfos = null;
                 int offset = 0;
                 bool hasPosts;
@@ -55,7 +60,7 @@ namespace VkPostAnalyser.Services.VkApi
 
         public string BuildPostUrl(UserReport report, PostInfo post)
         {
-            return BaseUrl + "/wall" + report.UserId.Value + "_" + post.PostId;
+            return VkConstants.VkBaseUrl + "/wall" + report.UserId.Value + "_" + post.PostId;
         }
     }
 }

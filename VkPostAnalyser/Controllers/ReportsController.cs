@@ -1,25 +1,40 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Data.Entity.Validation;
 using System.Threading.Tasks;
 using System.Web.Http;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.Services;
+using VkPostAnalyser.Services.Authentication;
+using VKSharp.Helpers.Exceptions;
 
 namespace VkPostAnalyser.Controllers
 {
     public class ReportsController : ApiController
     {
         private readonly IReportService _reportService;
+        private readonly UserManager<ApplicationUser, int> _userManager;
 
-        public ReportsController(IReportService reportService)
+        public ReportsController(IReportService reportService, UserManager<ApplicationUser, int> userManager)
         {
             _reportService = reportService;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public ReportsViewModel NextPage(DateTime? date = null, int pageSize = 5, bool mineOnly = false)
         {
-            return _reportService.NextReportsPage(null, date, pageSize);
+            int? userId;
+
+            if (mineOnly && User.Identity.IsAuthenticated)
+            {
+                userId = int.Parse(User.Identity.GetUserId());
+            }
+            else
+            {
+                userId = null;
+            }
+            return _reportService.NextReportsPage(userId, date, pageSize);
         }
 
         [HttpGet]
@@ -38,9 +53,24 @@ namespace VkPostAnalyser.Controllers
             }
             try
             {
-                report = await _reportService.CreateReportAsync(order.UserAlias);
+                ApplicationUser user;
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    int userId = int.Parse(User.Identity.GetUserId());
+                    user = await _userManager.FindByIdAsync(userId);
+                }
+                else
+                {
+                    user = null;
+                }
+                report = await _reportService.CreateReportAsync(order.UserAlias, user);
             }
             catch (DbEntityValidationException exc)
+            {
+                return InternalServerError(exc);
+            }
+            catch (VKException exc)
             {
                 return InternalServerError(exc);
             }

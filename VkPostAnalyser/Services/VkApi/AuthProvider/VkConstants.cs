@@ -14,5 +14,8 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
         }
 
         public const string VkAuthenticationType = "Vkontakte";
+        public const string VkBaseUrl = "http://vk.com";
+        public const string TokenEndpoint = "https://oauth.vk.com/access_token";
+        public const string GraphApiEndpoint = "https://api.vk.com/method/";
     }
 }

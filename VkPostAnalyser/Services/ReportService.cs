@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VkPostAnalyser.Model;
+using VkPostAnalyser.Services.Authentication;
 
 namespace VkPostAnalyser.Services
 {
     public interface IReportService
     {
-        ReportsViewModel NextReportsPage(string authorId, DateTime? date, int pageSize);
+        ReportsViewModel NextReportsPage(int? authorId, DateTime? date, int pageSize);
 
-        ReportsViewModel RetrieveNewReports(string authorId, DateTime date);
+        ReportsViewModel RetrieveNewReports(int? authorId, DateTime date);
 
-        Task<UserReport> CreateReportAsync(string userAlias, string authorId = null);
+        Task<UserReport> CreateReportAsync(string userAlias, ApplicationUser user);
     }
 
     public class ReportService : IReportService
@@ -26,12 +27,12 @@ namespace VkPostAnalyser.Services
             _socialApiProvider = socialApiProvider;
         }
 
-        public ReportsViewModel NextReportsPage(string authorId, DateTime? date, int pageSize)
+        public ReportsViewModel NextReportsPage(int? authorId, DateTime? date, int pageSize)
         {
             IQueryable<UserReport> reportsQuery = _dataContext.UserReports.Include("PostInfos");
-            if (authorId != null)
+            if (authorId.HasValue)
             {
-                reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId);
+                reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId.Value);
             }
             if (date.HasValue)
             {
@@ -42,12 +43,12 @@ namespace VkPostAnalyser.Services
             return BuildReportsModel(reportsQuery.ToList(), pageSize);
         }
 
-        public ReportsViewModel RetrieveNewReports(string authorId, DateTime date)
+        public ReportsViewModel RetrieveNewReports(int? authorId, DateTime date)
         {
             IQueryable<UserReport> reportsQuery = _dataContext.UserReports.Include("PostInfos");
-            if (authorId != null)
+            if (authorId.HasValue)
             {
-                reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId);
+                reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId.Value);
             }
             reportsQuery = reportsQuery
                 .Where(r => r.CreationDate > date)
@@ -56,14 +57,14 @@ namespace VkPostAnalyser.Services
             return BuildReportsModel(reportsQuery.ToList());
         }
 
-        public async Task<UserReport> CreateReportAsync(string userAlias, string authorId)
+        public async Task<UserReport> CreateReportAsync(string userAlias, ApplicationUser author)
         {
             DateTime currentDate = DateTime.Now;
-            IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userAlias);
+            IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userAlias, author);
             int? ownerId = allPosts.Any() ? (int?)allPosts.First().OwnerId : null;
             var userReport = new UserReport
             {
-                AuthorId = authorId,
+                AuthorId = author.Id,
                 CreationDate = currentDate,
                 UserId = ownerId,
                 UserAlias = userAlias,
