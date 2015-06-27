@@ -6,7 +6,7 @@
             templateUrl: '/App/reportsList.html'
         });
     }]);
-    postAnalyser.factory("dataContext", ["$http", "$q", function ($http) {
+    postAnalyser.factory("dataContext", ["$http", "$q", function ($http, $q) {
         var retrieveReports = function (action, date, mineOnly) {
             var query = "/api/Reports/" + action + "?mineOnly=" + mineOnly;
             if (date) {
@@ -15,7 +15,7 @@
             return $http.get(query, { cache: false }).then(function (response) {
                 return response.data;
             }, function (response) {
-                return $q.$reject(response);
+                return $q.reject(response);
             });
         };
         return {
@@ -29,7 +29,7 @@
                 return $http.post("/api/Reports/Post", { UserAlias: userAlias }).then(function (response) {
                     return response.data;
                 }, function (response) {
-                    return $q.$reject(response);
+                    return $q.reject(response);
                 });
             }
         };
@@ -46,11 +46,15 @@
                 vm.hasMore = model.HasMore;
                 vm.lastDate = model.LastDate;
                 vm.nextPageLoading = false;
-            }, function () {
+            }, function (response) {
                 vm.nextPageLoading = false;
             });
         };
         vm.update = function () {
+            if (!vm.reports || !vm.reports.length) {
+                vm.loadMore();
+                return;
+            }
             vm.newReportsLoading = true;
             dataContext.newReports(vm.firstDate, mineOnly).then(function (model) {
                 if (!vm.lastDate) {
@@ -63,7 +67,7 @@
                     vm.firstDate = model.FirstDate;
                 }
                 vm.newReportsLoading = false;
-            }, function () {
+            }, function (response) {
                 vm.newReportsLoading = false;
             });
         };
