@@ -55,7 +55,7 @@ namespace VkPostAnalyser
             builder.RegisterType<DataContext>().As<DbContext>().InstancePerRequest();
             builder.Register<DataContext>((c, p) => (DataContext)c.Resolve<DbContext>());
             builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, string>>().InstancePerRequest();
-            builder.RegisterType<UserStore<ApplicationUser>>().As<IUserStore<ApplicationUser>>().InstancePerRequest();
+            builder.RegisterType<ApplicationUserStore>().As<IUserStore<ApplicationUser>>().InstancePerRequest();
             builder.Register<UserManager<ApplicationUser>>((c, p) => BuildUserManager(c, p, dataProtectionProvider));
             builder.RegisterType<VkApiProvider>().As<ISocialApiProvider>().InstancePerRequest();
             builder.RegisterType<ReportService>().As<IReportService>().InstancePerRequest();

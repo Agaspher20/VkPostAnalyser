@@ -30,12 +30,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             _logger = logger;
         }
 
-        //<summary>step 1
-        //called at the end of server request after site controllers
-        //if client not autorized 401 - redirect to vk.com - It is start point of the authorization process
-        //Redirect user to vk.com where he need loging and allow access to your app
-        //after that redirect back to {host}/signin-vkontakte
-        //</summary
         protected override Task ApplyResponseChallengeAsync()
         {
             if (Response.StatusCode != 401)
@@ -43,7 +37,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                 return Task.FromResult<object>(null);
             }
 
-            //Helper checking if that module called for login
             AuthenticationResponseChallenge challenge = Helper.LookupChallenge(Options.AuthenticationType, Options.AuthenticationMode);
 
             if (challenge != null)
@@ -84,23 +77,16 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             return Task.FromResult<object>(null);
         }
 
-        //<summary>step 2.0
-        //Called at start of page request, before site controllers
-        //</summary>
         public override async Task<bool> InvokeAsync()
         {
             return await InvokeReplyPathAsync();
         }
 
-        //step 2.1
-        //called at start of page request - checking if request match with "{host}/signin-vkontakte" url {?code=*******************}
-        //if matched - making AuthenticationTicket 
         private async Task<bool> InvokeReplyPathAsync()
         {
             if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
             {
                 AuthenticationTicket ticket = await AuthenticateAsync();
-                //call Task<AuthenticationTicket> AuthenticateCoreAsync() step 2.3
                 if (ticket == null)
                 {
                     _logger.WriteWarning("Invalid return state, unable to redirect.");
@@ -144,9 +130,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             return false;
         }
 
-        //step 2.3
-        //making AuthenticationTicket after client return from Vk.com
-        //here we make actually autorization work
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
             AuthenticationProperties properties = null;
@@ -169,7 +152,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                     return null;
                 }
 
-                // OAuth2 10.12 CSRF
                 if (!ValidateCorrelationId(properties, _logger))
                 {
                     return new AuthenticationTicket(null, properties);
@@ -193,7 +175,6 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                 string userid = JsonResponse["user_id"];
                 string email = JsonResponse["email"];
 
-                //public method which dont require token
                 string userInfoLink = GraphApiEndpoint + "users.get.xml" +
                                       "?user_ids=" + Uri.EscapeDataString(userid) +
                                       "&fields=" + Uri.EscapeDataString("nickname,screen_name,photo_50");
@@ -251,14 +232,14 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             return new AuthenticationTicket(null, properties);
         }
 
-        private string GetOAuthURL(int appId, VKPermission permissions = VKPermission.None, string redirectURL = "https://oauth.vk.com/blank.html" ) { 
-             var testperm = Enum.GetValues(typeof (VKPermission)).OfType<VKPermission>() 
-                     .Where(a => a != VKPermission.None && a != VKPermission.Everything);
+        private string GetOAuthURL(int appId, VKPermission permissions = VKPermission.None, string redirectURL = "https://oauth.vk.com/blank.html")
+        {
+            var testperm = Enum.GetValues(typeof(VKPermission)).OfType<VKPermission>().Where(a => a != VKPermission.None && a != VKPermission.Everything);
             string permissionsValue = string.Join(",", testperm.Where(a => permissions.HasFlag(a)).Select(a => a.ToString().ToLowerInvariant()));
-             return string.Format(@"https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&response_type=code",
-                 appId,
-                 permissionsValue,
-                 redirectURL); 
-         }
+            return string.Format(@"https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&response_type=code",
+                appId,
+                permissionsValue,
+                redirectURL);
+        }
     }
 }
