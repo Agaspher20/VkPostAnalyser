@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using VkPostAnalyser.Model;
-using VkPostAnalyser.Services.Authentication;
 
 namespace VkPostAnalyser.Services
 {
-    public class DataContext : IdentityDbContext<ApplicationUser>
+    public class DataContext : DbContext
     {
-        public DataContext() : base("DefaultConnection")
-        {
-        }
+        public DataContext() : base("DefaultConnection") { }
 
         public DbSet<PostInfo> PostInfos { get; set; }
 

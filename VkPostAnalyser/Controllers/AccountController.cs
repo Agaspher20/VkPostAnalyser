@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
+﻿using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.Services.Authentication;
@@ -17,9 +13,9 @@ namespace VkPostAnalyser.Controllers
     public class AccountController : Controller
     {
         private readonly IAuthenticationManager _authenticationManager;
-        private readonly SignInManager<ApplicationUser, string> _signInManager;
+        private readonly SignInManager<ApplicationUser, int> _signInManager;
         public AccountController(IAuthenticationManager authenticationManager,
-            SignInManager<ApplicationUser, string> signInManager)
+            SignInManager<ApplicationUser, int> signInManager)
         {
             _authenticationManager = authenticationManager;
             _signInManager = signInManager;
@@ -33,6 +29,14 @@ namespace VkPostAnalyser.Controllers
                 ReturnUrl = returnUrl,
                 LoginProviders = _authenticationManager.GetExternalAuthenticationTypes().ToList()
             });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LogOff()
+        {
+            _authenticationManager.SignOut();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

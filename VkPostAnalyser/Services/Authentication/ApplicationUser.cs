@@ -1,12 +1,22 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace VkPostAnalyser.Services.Authentication
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IUser<int>
     {
+        public int Id { get; set; }
+
+        public string Token { get; set; }
+
+        public string UserName { get; set; }
+
+        public string UserAlias { get; set; }
+
+        public string LoginType { get; set; }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
     }
 }

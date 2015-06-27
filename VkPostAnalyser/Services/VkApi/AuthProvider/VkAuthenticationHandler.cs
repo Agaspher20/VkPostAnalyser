@@ -106,7 +106,8 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                     ClaimsIdentity grantIdentity = context.Identity;
                     if (!string.Equals(grantIdentity.AuthenticationType, context.SignInAsAuthenticationType, StringComparison.Ordinal))
                     {
-                        grantIdentity = new ClaimsIdentity(grantIdentity.Claims, context.SignInAsAuthenticationType, grantIdentity.NameClaimType, grantIdentity.RoleClaimType);
+                        grantIdentity = new ClaimsIdentity(grantIdentity.Claims, context.SignInAsAuthenticationType,
+                            grantIdentity.NameClaimType, grantIdentity.RoleClaimType);
                     }
                     var authenticationManager = Context.Authentication;
                     authenticationManager.SignIn(context.Properties, grantIdentity);
@@ -191,32 +192,27 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
                     ClaimsIdentity.DefaultNameClaimType,
                     ClaimsIdentity.DefaultRoleClaimType);
 
-                context.Identity.AddClaim(new Claim("urn:vkontakte:accesstoken", context.Token, XmlSchemaString,
+                context.Identity.AddClaim(new Claim(VkConstants.ClaimTypes.Token, context.Token, XmlSchemaString,
                     Options.AuthenticationType));
 
                 if (!string.IsNullOrEmpty(context.Id))
                 {
-                    context.Identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, context.Id, XmlSchemaString,
+                    context.Identity.AddClaim(new Claim(VkConstants.ClaimTypes.Id, context.Id, XmlSchemaString,
                         Options.AuthenticationType));
                 }
                 if (!string.IsNullOrEmpty(context.DefaultName))
                 {
-                    context.Identity.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, context.DefaultName,
+                    context.Identity.AddClaim(new Claim(VkConstants.ClaimTypes.Alias, context.DefaultName,
                         XmlSchemaString, Options.AuthenticationType));
                 }
                 if (!string.IsNullOrEmpty(context.FullName))
                 {
-                    context.Identity.AddClaim(new Claim("urn:vkontakte:name", context.FullName, XmlSchemaString,
+                    context.Identity.AddClaim(new Claim(VkConstants.ClaimTypes.FullName, context.FullName, XmlSchemaString,
                         Options.AuthenticationType));
                 }
                 if (!string.IsNullOrEmpty(context.Link))
                 {
-                    context.Identity.AddClaim(new Claim("urn:vkontakte:link", context.Link, XmlSchemaString,
-                        Options.AuthenticationType));
-                }
-                if (!string.IsNullOrEmpty(email))
-                {
-                    context.Identity.AddClaim(new Claim(ClaimTypes.Email, email, XmlSchemaString,
+                    context.Identity.AddClaim(new Claim(VkConstants.ClaimTypes.AvatarLink, context.Link, XmlSchemaString,
                         Options.AuthenticationType));
                 }
                 context.Properties = properties;

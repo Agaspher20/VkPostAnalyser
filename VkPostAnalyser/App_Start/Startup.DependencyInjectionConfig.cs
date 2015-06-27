@@ -3,14 +3,12 @@ using Autofac.Core;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
 using Owin;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Reflection;
 using System.Web;
 using System.Web.Http;
@@ -52,23 +50,22 @@ namespace VkPostAnalyser
 
             var dataProtectionProvider = app.GetDataProtectionProvider();
 
-            builder.RegisterType<DataContext>().As<DbContext>().InstancePerRequest();
-            builder.Register<DataContext>((c, p) => (DataContext)c.Resolve<DbContext>());
-            builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, string>>().InstancePerRequest();
-            builder.RegisterType<ApplicationUserStore>().As<IUserStore<ApplicationUser>>().InstancePerRequest();
-            builder.Register<UserManager<ApplicationUser>>((c, p) => BuildUserManager(c, p, dataProtectionProvider));
+            builder.RegisterType<DataContext>().InstancePerRequest();
+            builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, int>>().InstancePerRequest();
+            builder.RegisterType<ApplicationUserStore>().As<IUserStore<ApplicationUser, int>>().InstancePerRequest();
+            builder.Register<UserManager<ApplicationUser, int>>((c, p) => BuildUserManager(c, p, dataProtectionProvider));
             builder.RegisterType<VkApiProvider>().As<ISocialApiProvider>().InstancePerRequest();
             builder.RegisterType<ReportService>().As<IReportService>().InstancePerRequest();
-            builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, string>>().InstancePerRequest();
+            builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, int>>().InstancePerRequest();
         }
 
         private ApplicationUserManager BuildUserManager(IComponentContext context, IEnumerable<Parameter> parameters, IDataProtectionProvider dataProtectionProvider)
         {
-            var manager = new ApplicationUserManager(context.Resolve<IUserStore<ApplicationUser>>());
+            var manager = new ApplicationUserManager(context.Resolve<IUserStore<ApplicationUser, int>>());
             
             if (dataProtectionProvider != null)
             {
-                manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
+                manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser, int>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
         }
