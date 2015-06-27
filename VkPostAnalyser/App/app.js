@@ -1,4 +1,4 @@
-﻿(function (angular, c3, d3) {
+﻿(function (angular, c3, d3, toastr) {
     'use strict';
     var postAnalyser = angular.module('postAnalyser', ["ngRoute"]);
     postAnalyser.config(['$routeProvider', function ($routeProvider) {
@@ -36,6 +36,7 @@
     }]);
     postAnalyser.controller("reportsListController", ["$scope", "$routeParams", "dataContext", function ($scope, $routeParams, dataContext) {
         var vm = this, mineOnly = !!$routeParams.mineOnly;
+        toastr.info('Are you the 6 fingered man?');
         vm.loadMore = function () {
             vm.nextPageLoading = true;
             dataContext.nextPage(vm.lastDate, mineOnly).then(function (model) {
@@ -117,4 +118,4 @@
             }
         };
     });
-}(angular, c3, d3));
+}(angular, c3, d3, toastr));
