@@ -1,4 +1,4 @@
-﻿(function (angular, c3, d3, toastr) {
+﻿(function (angular, c3, toastr, window) {
     'use strict';
     var postAnalyser = angular.module('postAnalyser', ["ngRoute"], ['$httpProvider', '$provide', function ($httpProvider, $provide) {
         $provide.factory('responseInterceptor', ['$q', function ($q) {
@@ -14,13 +14,13 @@
                     }
                     var message = "Error " + response.status;
                     if (response.data) {
-                        message += ": " + response.data;
+                        message += ": " + (response.data.Message || response.data);
                     }
                     toastr.error(message);
                     return $q.reject(response);
                 }
             };
-        }])
+        }]);
         $httpProvider.interceptors.push('responseInterceptor');
     }]);
     postAnalyser.config(['$routeProvider', function ($routeProvider) {
@@ -28,7 +28,7 @@
             templateUrl: '/App/reportsList.html'
         });
     }]);
-    postAnalyser.factory("dataContext", ["$http", "$q", function ($http, $q) {
+    postAnalyser.factory("dataContext", ["$http", function ($http) {
         var retrieveReports = function (action, date, mineOnly) {
             var query = "/api/Reports/" + action + "?mineOnly=" + mineOnly;
             if (date) {
@@ -41,14 +41,14 @@
                 return retrieveReports("NextPage", lastDate, mineOnly);
             },
             newReports: function (firstDate, mineOnly) {
-                return retrieveReports("NewReports", firstDate, mineOnly)
+                return retrieveReports("NewReports", firstDate, mineOnly);
             },
             postReport: function (userId) {
                 return $http.post("/api/Reports/Post", { UserId: userId });
             }
         };
     }]);
-    postAnalyser.controller("reportsListController", ["$scope", "$routeParams", "dataContext", function ($scope, $routeParams, dataContext) {
+    postAnalyser.controller("reportsListController", ["$routeParams", "dataContext", function ($routeParams, dataContext) {
         var vm = this, mineOnly = $routeParams.mineOnly && ($routeParams.mineOnly === "myReports");
         vm.loadMore = function () {
             vm.nextPageLoading = true;
@@ -67,7 +67,7 @@
                 vm.hasMore = true;
                 vm.lastDate = model.LastDate;
                 toastr.success("Success");
-            }, function (response) {
+            }, function () {
                 vm.nextPageLoading = false;
             });
         };
@@ -94,11 +94,19 @@
                     vm.firstDate = model.FirstDate;
                 }
                 toastr.success("Success");
-            }, function (response) {
+            }, function () {
                 vm.newReportsLoading = false;
             });
         };
+        vm.onKeyboardSubmit = function ($event) {
+            if ($event.which === 13) {
+                vm.orderReport();
+            }
+        };
         vm.orderReport = function () {
+            if (vm.reportCreation) {
+                return;
+            }
             vm.reportCreation = true;
             dataContext.postReport(vm.userId).then(function (response) {
                 if (!vm.reports) {
@@ -109,7 +117,7 @@
                 }
                 vm.reportCreation = false;
                 toastr.success("Success");
-            }, function (response) {
+            }, function () {
                 vm.reportCreation = false;
             });
         };
@@ -128,8 +136,7 @@
             link: function (scope, element) {
                 var chartData = scope.chartView,
                     xAxisData,
-                    yAxisData,
-                    chart;
+                    yAxisData;
                 if (!chartData) {
                     return;
                 }
@@ -141,7 +148,7 @@
                 });
                 xAxisData.unshift("x");
                 yAxisData.unshift("Likes Count");
-                chart = c3.generate({
+                c3.generate({
                     bindto: element.get(0),
                     data: {
                         x: "x",
@@ -154,4 +161,4 @@
             }
         };
     });
-}(angular, c3, d3, toastr));
+}(angular, c3, toastr, window));

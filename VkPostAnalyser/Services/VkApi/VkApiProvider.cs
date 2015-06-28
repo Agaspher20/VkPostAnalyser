@@ -11,8 +11,6 @@ namespace VkPostAnalyser.Services.VkApi
 {
     public class VkApiProvider : ISocialApiProvider
     {
-        private const int PageSize = 100; // Max count of posts which wall.get returns
-
         public async Task<IList<PostInfo>> RetrievePostInfosAsync(int userId, ApplicationUser author)
         {
             var api = new VKApi();
@@ -21,12 +19,12 @@ namespace VkPostAnalyser.Services.VkApi
                 api.AddToken(new VKToken(author.Token, userId: author.Id));
             }
             List<PostInfo> postInfos = null;
-            int offset = 0, requestsCount = 0;
+            int offset = 0, requestsCount = 1;
             bool hasPosts;
             do
             {
                 int pageCount = 0;
-                EntityList<Post> posts = await api.Wall.Get(ownerId: userId, offset: offset, count: PageSize);
+                EntityList<Post> posts = await api.Wall.Get(ownerId: userId, offset: offset, count: VkConstants.MaxWallPageSize);
                 ++requestsCount;
                 if (postInfos == null)
                 {
@@ -43,9 +41,9 @@ namespace VkPostAnalyser.Services.VkApi
                         OwnerId = post.OwnerId
                     });
                 }
-                hasPosts = pageCount >= PageSize;
+                hasPosts = pageCount >= VkConstants.MaxWallPageSize;
                 offset += pageCount;
-                if (requestsCount == 2)
+                if (requestsCount == VkConstants.MaxRequestsCountPerSecond)
                 {
                     requestsCount = 0;
                     await Task.Delay(1000);

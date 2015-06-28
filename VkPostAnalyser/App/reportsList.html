@@ -1,7 +1,7 @@
 ﻿<div data-ng-controller="reportsListController as vm">
     <div class="row" data-ng-form="orderReportForm">
         <div class="col-md-4"><label for="userId">User id:</label></div>
-        <div class="col-md-8"><input type="number" name="userId" id="userId" required="required" data-ng-model="vm.userId" /></div>
+        <div class="col-md-8"><input type="number" name="userId" id="userId" required="required" data-ng-model="vm.userId" data-ng-keypress="vm.onKeyboardSubmit($event)" /></div>
     </div>
     <div class="row" data-ng-show="orderReportForm.$invalid">
         <ul>
