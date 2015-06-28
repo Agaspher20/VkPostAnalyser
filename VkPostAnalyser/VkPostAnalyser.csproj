@@ -1050,6 +1050,7 @@
     <Compile Include="Services\VkApi\AuthProvider\VkConstants.cs" />
     <Compile Include="Services\VkApi\AuthProvider\VkReturnEndpointContext.cs" />
     <Compile Include="Services\VkApi\VkApiProvider.cs" />
+    <Compile Include="Services\VkApi\VkExceptionFilterAttribute.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

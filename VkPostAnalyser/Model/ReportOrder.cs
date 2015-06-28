@@ -6,6 +6,6 @@ namespace VkPostAnalyser.Model
     public class ReportOrder
     {
         [Required(ErrorMessageResourceName = "UserIdRequired", ErrorMessageResourceType=typeof(LocalizationStrings))]
-        public string UserAlias { get; set; }
+        public int? UserId { get; set; }
     }
 }

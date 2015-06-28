@@ -13,7 +13,7 @@ namespace VkPostAnalyser.Services
 
         ReportsViewModel RetrieveNewReports(int? authorId, DateTime date);
 
-        Task<UserReport> CreateReportAsync(string userAlias, ApplicationUser user);
+        Task<UserReport> CreateReportAsync(int userId, ApplicationUser user);
     }
 
     public class ReportService : IReportService
@@ -57,17 +57,15 @@ namespace VkPostAnalyser.Services
             return BuildReportsModel(reportsQuery.ToList());
         }
 
-        public async Task<UserReport> CreateReportAsync(string userAlias, ApplicationUser author)
+        public async Task<UserReport> CreateReportAsync(int userId, ApplicationUser author)
         {
             DateTime currentDate = DateTime.Now;
-            IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userAlias, author);
-            int? ownerId = allPosts.Any() ? (int?)allPosts.First().OwnerId : null;
+            IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userId, author);
             var userReport = new UserReport
             {
-                AuthorId = author.Id,
+                AuthorId = author == null ? null : (int?)author.Id,
                 CreationDate = currentDate,
-                UserId = ownerId,
-                UserAlias = userAlias,
+                UserId = userId,
                 PostInfos = allPosts.FilterPosts()
             };
             _dataContext.UserReports.Add(userReport);
@@ -87,7 +85,6 @@ namespace VkPostAnalyser.Services
                 model.FirstDate = (DateTime?)reports.Max(r => r.CreationDate);
                 model.LastDate = (DateTime?)reports.Min(r => r.CreationDate);
             }
-            model.HasMore = reports.Count == pageSize;
             foreach (var report in reports)
             {
                 InitUserReport(report);

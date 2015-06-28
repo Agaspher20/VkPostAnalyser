@@ -7,7 +7,7 @@ namespace VkPostAnalyser.Services
 {
     public interface ISocialApiProvider
     {
-        Task<IList<PostInfo>> RetrievePostInfosAsync(string userAlias, ApplicationUser author);
+        Task<IList<PostInfo>> RetrievePostInfosAsync(int userId, ApplicationUser author);
 
         string BuildPostUrl(UserReport report, PostInfo post);
     }

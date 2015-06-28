@@ -14,53 +14,52 @@ namespace VkPostAnalyser.Services.VkApi
     {
         private const int PageSize = 100; // Max count of posts which wall.get returns
 
-        public async Task<IList<PostInfo>> RetrievePostInfosAsync(string userAlias, ApplicationUser author)
+        public async Task<IList<PostInfo>> RetrievePostInfosAsync(int userId, ApplicationUser author)
         {
-            try
+            var api = new VKApi();
+            if (author != null)
             {
-                var api = new VKApi();
-                if (author != null)
+                api.AddToken(new VKToken(author.Token, userId: author.Id));
+            }
+            List<PostInfo> postInfos = null;
+            int offset = 0, requestsCount = 0;
+            bool hasPosts;
+            do
+            {
+                int pageCount = 0;
+                EntityList<Post> posts = await api.Wall.Get(ownerId: userId, offset: offset, count: PageSize);
+                ++requestsCount;
+                if (postInfos == null)
                 {
-                    api.AddToken(new VKToken(author.Token, userId: author.Id));
+                    postInfos = new List<PostInfo>(posts.Count);
                 }
-                List<PostInfo> postInfos = null;
-                int offset = 0;
-                bool hasPosts;
-                do
+                foreach (var post in posts.Items)
                 {
-                    int pageCount = 0;
-                    EntityList<Post> posts = await api.Wall.Get(domain: userAlias, offset: offset, count: PageSize);
-                    if (postInfos == null)
+                    ++pageCount;
+                    postInfos.Add(new PostInfo
                     {
-                        postInfos = new List<PostInfo>(posts.Count);
-                    }
-                    foreach (var post in posts.Items)
-                    {
-                        ++pageCount;
-                        postInfos.Add(new PostInfo
-                        {
-                            LikesCount = post.Likes.Count,
-                            PostId = post.Id,
-                            SignsCount = post.Text.Length,
-                            OwnerId = post.OwnerId
-                        });
-                    }
-                    hasPosts = pageCount >= PageSize;
-                    offset += pageCount;
+                        LikesCount = post.Likes.Count,
+                        PostId = post.Id,
+                        SignsCount = post.Text.Length,
+                        OwnerId = post.OwnerId
+                    });
                 }
-                while (hasPosts);
+                hasPosts = pageCount >= PageSize;
+                offset += pageCount;
+                if (requestsCount == 2)
+                {
+                    requestsCount = 0;
+                    await Task.Delay(1000);
+                }
+            }
+            while (hasPosts);
 
-                return postInfos;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return postInfos;
         }
 
         public string BuildPostUrl(UserReport report, PostInfo post)
         {
-            return VkConstants.VkBaseUrl + "/wall" + report.UserId.Value + "_" + post.PostId;
+            return VkConstants.VkBaseUrl + "/wall" + report.UserId + "_" + post.PostId;
         }
     }
 }

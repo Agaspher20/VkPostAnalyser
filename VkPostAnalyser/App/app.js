@@ -1,6 +1,28 @@
 ﻿(function (angular, c3, d3, toastr) {
     'use strict';
-    var postAnalyser = angular.module('postAnalyser', ["ngRoute"]);
+    var postAnalyser = angular.module('postAnalyser', ["ngRoute"], ['$httpProvider', '$provide', function ($httpProvider, $provide) {
+        $provide.factory('responseInterceptor', ['$q', function ($q) {
+            return {
+                request: function (config) { return config; },
+                requestError: function (rejection) { return $q.reject(rejection); },
+                response: function (response) {
+                    return response;
+                },
+                responseError: function (response) {
+                    if (response.status === 401) {
+                        window.location = "/Account/Login";
+                    }
+                    var message = "Error " + response.status;
+                    if (response.data) {
+                        message += ": " + response.data;
+                    }
+                    toastr.error(message);
+                    return $q.reject(response);
+                }
+            };
+        }])
+        $httpProvider.interceptors.push('responseInterceptor');
+    }]);
     postAnalyser.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/:mineOnly?', {
             templateUrl: '/App/reportsList.html'
@@ -12,11 +34,7 @@
             if (date) {
                 query += "&date=" + date;
             }
-            return $http.get(query, { cache: false }).then(function (response) {
-                return response.data;
-            }, function (response) {
-                return $q.reject(response);
-            });
+            return $http.get(query, { cache: false });
         };
         return {
             nextPage: function (lastDate, mineOnly) {
@@ -25,28 +43,30 @@
             newReports: function (firstDate, mineOnly) {
                 return retrieveReports("NewReports", firstDate, mineOnly)
             },
-            postReport: function (userAlias) {
-                return $http.post("/api/Reports/Post", { UserAlias: userAlias }).then(function (response) {
-                    return response.data;
-                }, function (response) {
-                    return $q.reject(response);
-                });
+            postReport: function (userId) {
+                return $http.post("/api/Reports/Post", { UserId: userId });
             }
         };
     }]);
     postAnalyser.controller("reportsListController", ["$scope", "$routeParams", "dataContext", function ($scope, $routeParams, dataContext) {
-        var vm = this, mineOnly = !!$routeParams.mineOnly;
-        toastr.info('Are you the 6 fingered man?');
+        var vm = this, mineOnly = $routeParams.mineOnly && ($routeParams.mineOnly === "myReports");
         vm.loadMore = function () {
             vm.nextPageLoading = true;
-            dataContext.nextPage(vm.lastDate, mineOnly).then(function (model) {
+            dataContext.nextPage(vm.lastDate, mineOnly).then(function (response) {
+                var model = response.data;
+                vm.nextPageLoading = false;
+                if (response.status === 204) {
+                    vm.hasMore = false;
+                    toastr.warning("All pages were loaded");
+                    return;
+                }
                 if (!vm.firstDate) {
                     vm.firstDate = model.FirstDate;
                 }
                 vm.reports = vm.reports ? vm.reports.concat(model.Reports) : model.Reports;
-                vm.hasMore = model.HasMore;
+                vm.hasMore = true;
                 vm.lastDate = model.LastDate;
-                vm.nextPageLoading = false;
+                toastr.success("Success");
             }, function (response) {
                 vm.nextPageLoading = false;
             });
@@ -57,7 +77,13 @@
                 return;
             }
             vm.newReportsLoading = true;
-            dataContext.newReports(vm.firstDate, mineOnly).then(function (model) {
+            dataContext.newReports(vm.firstDate, mineOnly).then(function (response) {
+                var model = response.data;
+                vm.newReportsLoading = false;
+                if (response.status === 204) {
+                    toastr.success("No Updates");
+                    return;
+                }
                 if (!vm.lastDate) {
                     vm.lastDate = model.LastDate;
                 }
@@ -67,14 +93,24 @@
                 if (model.FirstDate) {
                     vm.firstDate = model.FirstDate;
                 }
-                vm.newReportsLoading = false;
+                toastr.success("Success");
             }, function (response) {
                 vm.newReportsLoading = false;
             });
         };
         vm.orderReport = function () {
-            dataContext.postReport(vm.userAlias).then(function (report) {
-                vm.reports.unshift(report);
+            vm.reportCreation = true;
+            dataContext.postReport(vm.userId).then(function (response) {
+                if (!vm.reports) {
+                    vm.reports = [response.data];
+                }
+                else {
+                    vm.reports.unshift(response.data);
+                }
+                vm.reportCreation = false;
+                toastr.success("Success");
+            }, function (response) {
+                vm.reportCreation = false;
             });
         };
         vm.loadMore();

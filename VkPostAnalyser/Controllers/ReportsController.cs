@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
+using System.Linq;
 using System.Data.Entity.Validation;
 using System.Threading.Tasks;
 using System.Web.Http;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.Services;
 using VkPostAnalyser.Services.Authentication;
+using VkPostAnalyser.Services.VkApi;
 using VKSharp.Helpers.Exceptions;
+using System.Net;
 
 namespace VkPostAnalyser.Controllers
 {
@@ -22,7 +25,7 @@ namespace VkPostAnalyser.Controllers
         }
 
         [HttpGet]
-        public ReportsViewModel NextPage(DateTime? date = null, int pageSize = 5, bool mineOnly = false)
+        public IHttpActionResult NextPage(DateTime? date = null, int pageSize = 5, bool mineOnly = false)
         {
             int? userId;
 
@@ -34,16 +37,21 @@ namespace VkPostAnalyser.Controllers
             {
                 userId = null;
             }
-            return _reportService.NextReportsPage(userId, date, pageSize);
+            var reportsModel = _reportService.NextReportsPage(userId, date, pageSize);
+            var status = !reportsModel.Reports.Any() ? HttpStatusCode.NoContent : HttpStatusCode.OK;
+            return Content<ReportsViewModel>(status, reportsModel);
         }
 
         [HttpGet]
-        public ReportsViewModel NewReports(DateTime date, bool mineOnly = false)
+        public IHttpActionResult NewReports(DateTime date, bool mineOnly = false)
         {
-            return _reportService.RetrieveNewReports(null, date);
+            var reportsModel = _reportService.RetrieveNewReports(null, date);
+            var status = !reportsModel.Reports.Any() ? HttpStatusCode.NoContent : HttpStatusCode.OK;
+            return Content<ReportsViewModel>(status, reportsModel);
         }
 
         [HttpPost]
+        [VkExceptionFilter]
         public async Task<IHttpActionResult> Post(ReportOrder order)
         {
             UserReport report;
@@ -51,29 +59,18 @@ namespace VkPostAnalyser.Controllers
             {
                 return BadRequest(ModelState);
             }
-            try
-            {
-                ApplicationUser user;
+            ApplicationUser user;
 
-                if (User.Identity.IsAuthenticated)
-                {
-                    int userId = int.Parse(User.Identity.GetUserId());
-                    user = await _userManager.FindByIdAsync(userId);
-                }
-                else
-                {
-                    user = null;
-                }
-                report = await _reportService.CreateReportAsync(order.UserAlias, user);
-            }
-            catch (DbEntityValidationException exc)
+            if (User.Identity.IsAuthenticated)
             {
-                return InternalServerError(exc);
+                int userId = int.Parse(User.Identity.GetUserId());
+                user = await _userManager.FindByIdAsync(userId);
             }
-            catch (VKException exc)
+            else
             {
-                return InternalServerError(exc);
+                user = null;
             }
+            report = await _reportService.CreateReportAsync(order.UserId.Value, user);
             string uri = Url.Link("DefaultApi", new { id = report.AuthorId });
             return Created<UserReport>(uri, report);
         }

@@ -1,23 +1,26 @@
 ﻿<div data-ng-controller="reportsListController as vm">
     <div class="row" data-ng-form="orderReportForm">
-        <div class="col-md-4"><label for="userAlias">User id:</label></div>
-        <div class="col-md-8"><input type="text" name="userAlias" id="userAlias" required="required" data-ng-model="vm.userAlias" /></div>
+        <div class="col-md-4"><label for="userId">User id:</label></div>
+        <div class="col-md-8"><input type="number" name="userId" id="userId" required="required" data-ng-model="vm.userId" /></div>
     </div>
     <div class="row" data-ng-show="orderReportForm.$invalid">
         <ul>
-            <li data-ng-show="orderReportForm.userAlias.$dirty && orderReportForm.userAlias.$invalid && orderReportForm.userAlias.$error.required">User Alias is required</li>
+            <li data-ng-show="orderReportForm.userId.$dirty && orderReportForm.userId.$invalid && orderReportForm.userId.$error.number">User Id is a number</li>
+            <li data-ng-show="orderReportForm.userId.$dirty && orderReportForm.userId.$invalid && orderReportForm.userId.$error.required">User Id is required</li>
         </ul>
     </div>
-    <div class="row">
+    <div class="row" data-ng-show="!vm.reportCreation">
         <button data-ng-click="vm.orderReport()" data-ng-disabled="orderReportForm.$invalid">Order New Report</button>
         <button data-ng-click="vm.update()">Update</button>
     </div>
+    <div class="row" data-ng-show="vm.reportCreation">Creating new report...</div>
     <div class="row" data-ng-show="vm.newReportsLoading">loading...</div>
     <div class="row" data-ng-repeat="report in vm.reports">
-        <div class="row">User Alias: {{report.UserAlias}}</div>
-        <div class="row" data-chart-view="report.PostInfos"></div>
+        <div class="row">User Id: {{report.UserId}}</div>
+        <div class="row" data-ng-if="!report.PostInfos.length">User has no posts</div>
+        <div class="row" data-ng-if="report.PostInfos.length" data-chart-view="report.PostInfos"></div>
         <div class="row">
-            <a href="{{report.MostPopular.Link}}">Most popular post with {{report.MostPopular.LikesCount}} likes</a>
+            <a target="_blank" href="{{report.MostPopular.Link}}">Most popular post with {{report.MostPopular.LikesCount}} likes</a>
         </div>
     </div>
     <div class="row" data-ng-show="vm.nextPageLoading">loading...</div>

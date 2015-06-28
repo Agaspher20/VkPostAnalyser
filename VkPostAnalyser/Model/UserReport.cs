@@ -25,12 +25,10 @@ namespace VkPostAnalyser.Model
         [Key]
         public long Id { get; set; }
 
-        public int AuthorId { get; set; }
-
-        public long? UserId { get; set; }
+        public int? AuthorId { get; set; }
 
         [Required]
-        public string UserAlias { get; set; }
+        public int UserId { get; set; }
 
         [Index]
         [Required]

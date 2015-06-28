@@ -9,13 +9,17 @@ namespace VkPostAnalyser.Services
     {
         public static IList<PostInfo> FilterPosts(this IList<PostInfo> posts)
         {
+            if (posts.Count == 0)
+            {
+                return posts;
+            }
             var equalityComparer = new DeltaIntEqualityComparer(10);
             var maxLikesCount = posts.Max(p => p.LikesCount);
             var mostPopularPost = posts.First(p => p.LikesCount == maxLikesCount);
             return posts.GroupBy(p => p.SignsCount, (sc, pg) => BuildFromGroup(sc, mostPopularPost.PostId, pg), equalityComparer).ToList();
         }
 
-        public static PostInfo BuildFromGroup(int signsCount, long mostPopularId, IEnumerable<PostInfo> postsGroup)
+        private static PostInfo BuildFromGroup(int signsCount, long mostPopularId, IEnumerable<PostInfo> postsGroup)
         {
             var postsList = postsGroup.OrderBy(p => p.LikesCount).ToList();
             int maxLikesCount = postsList.Max(p => p.LikesCount), likesCount;

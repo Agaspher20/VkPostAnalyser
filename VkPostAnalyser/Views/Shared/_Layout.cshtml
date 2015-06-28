@@ -22,8 +22,11 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/#">Main</a></li>
-                    <li><a href="/#MyReports">My Reports</a></li>
+                    <li><a href="/#all">Main</a></li>
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li><a href="/#myReports">My Reports</a></li>
+                    }                    
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
