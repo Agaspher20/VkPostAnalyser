@@ -29,10 +29,19 @@
         });
     }]);
     postAnalyser.factory("dataContext", ["$http", function ($http) {
-        var retrieveReports = function (action, date, mineOnly) {
-            var query = "/api/Reports/" + action + "?mineOnly=" + mineOnly;
+        var retrieveReports = function (action, date, mineOnly, skipIds) {
+            var query = "/api/Reports/" + action + "?mineOnly=" + !!mineOnly, i, skipIdsLength;
             if (date) {
                 query += "&date=" + date;
+            }
+            if (skipIds && skipIds.length) {
+                skipIdsLength = skipIds.length;
+                for (i = 0; i < skipIdsLength; ++i) {
+                    if (query.length > 2000) {
+                        break;
+                    }
+                    query += "&skipIds=" + skipIds[i];
+                }
             }
             return $http.get(query, { cache: false });
         };
@@ -40,8 +49,8 @@
             nextPage: function (lastDate, mineOnly) {
                 return retrieveReports("NextPage", lastDate, mineOnly);
             },
-            newReports: function (firstDate, mineOnly) {
-                return retrieveReports("NewReports", firstDate, mineOnly);
+            newReports: function (firstDate, skipReports, mineOnly) {
+                return retrieveReports("NewReports", firstDate, mineOnly, skipReports);
             },
             postReport: function (userId) {
                 return $http.post("/api/Reports/Post", { UserId: userId });
@@ -49,7 +58,16 @@
         };
     }]);
     postAnalyser.controller("reportsListController", ["$routeParams", "dataContext", function ($routeParams, dataContext) {
-        var vm = this, mineOnly = $routeParams.mineOnly && ($routeParams.mineOnly === "myReports");
+        var vm = this, mineOnly = $routeParams.mineOnly && ($routeParams.mineOnly === "myReports"),
+            skipReports,
+            addToSkipList = function (reportId) {
+                if (skipReports) {
+                    skipReports.push(reportId);
+                }
+                else {
+                    skipReports = [reportId];
+                }
+            };
         vm.loadMore = function () {
             vm.nextPageLoading = true;
             dataContext.nextPage(vm.lastDate, mineOnly).then(function (response) {
@@ -77,7 +95,7 @@
                 return;
             }
             vm.newReportsLoading = true;
-            dataContext.newReports(vm.firstDate, mineOnly).then(function (response) {
+            dataContext.newReports(vm.firstDate, skipReports, mineOnly).then(function (response) {
                 var model = response.data;
                 vm.newReportsLoading = false;
                 if (response.status === 204) {
@@ -93,6 +111,7 @@
                 if (model.FirstDate) {
                     vm.firstDate = model.FirstDate;
                 }
+                skipReports = null;
                 toastr.success("Success");
             }, function () {
                 vm.newReportsLoading = false;
@@ -116,6 +135,7 @@
                     vm.reports.unshift(response.data);
                 }
                 vm.reportCreation = false;
+                addToSkipList(response.data.Id);
                 toastr.success("Success");
             }, function () {
                 vm.reportCreation = false;

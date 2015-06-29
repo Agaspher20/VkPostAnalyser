@@ -10,6 +10,7 @@ using VkPostAnalyser.Services.Authentication;
 using VkPostAnalyser.Services.VkApi;
 using VKSharp.Helpers.Exceptions;
 using System.Net;
+using System.Collections.Generic;
 
 namespace VkPostAnalyser.Controllers
 {
@@ -43,9 +44,9 @@ namespace VkPostAnalyser.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult NewReports(DateTime date, bool mineOnly = false)
+        public IHttpActionResult NewReports(DateTime date, bool mineOnly = false, [FromUri]int[] skipIds = null)
         {
-            var reportsModel = _reportService.RetrieveNewReports(null, date);
+            var reportsModel = _reportService.RetrieveNewReports(null, date, skipIds);
             var status = !reportsModel.Reports.Any() ? HttpStatusCode.NoContent : HttpStatusCode.OK;
             return Content<ReportsViewModel>(status, reportsModel);
         }

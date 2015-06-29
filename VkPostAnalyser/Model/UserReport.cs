@@ -23,7 +23,7 @@ namespace VkPostAnalyser.Model
         }
 
         [Key]
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         public int? AuthorId { get; set; }
 
