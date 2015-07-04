@@ -3,7 +3,6 @@ using Owin;
 
 namespace VkPostAnalyser
 {
-    [assembly: OwinStartupAttribute(typeof(VkPostAnalyser.Startup))]
     public partial class Startup
     {
         public void Configuration(IAppBuilder app)

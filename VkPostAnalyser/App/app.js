@@ -1,6 +1,6 @@
 ﻿(function (angular, c3, toastr, window) {
     'use strict';
-    var postAnalyser = angular.module('postAnalyser', ["ngRoute"], ['$httpProvider', '$provide', function ($httpProvider, $provide) {
+    var postAnalyser = angular.module('postAnalyser', ["ngRoute", "ngCookies"], ['$httpProvider', '$provide', function ($httpProvider, $provide) {
         $provide.factory('responseInterceptor', ['$q', function ($q) {
             return {
                 request: function (config) { return config; },
@@ -57,7 +57,15 @@
             }
         };
     }]);
-    postAnalyser.controller("reportsListController", ["$routeParams", "dataContext", function ($routeParams, dataContext) {
+    postAnalyser.factory("membershipProvider", ["$cookies", function ($cookies) {
+        return {
+            isAuthenticated: function () {
+                console.log($cookies.get(".AspNet.ApplicationCookie"));
+                return !!$cookies.get(".AspNet.ApplicationCookie");
+            }
+        };
+    }]);
+    postAnalyser.controller("reportsListController", ["$routeParams", "dataContext", "membershipProvider", function ($routeParams, dataContext, membershipProvider) {
         var vm = this, mineOnly = $routeParams.mineOnly && ($routeParams.mineOnly === "myReports"),
             skipReports,
             addToSkipList = function (reportId) {
@@ -67,7 +75,23 @@
                 else {
                     skipReports = [reportId];
                 }
+            },
+            onReportCreated = function (viewModel, reportPromise) {
+                reportPromise.then(function (response) {
+                    if (!viewModel.reports) {
+                        viewModel.reports = [response.data];
+                    }
+                    else {
+                        viewModel.reports.unshift(response.data);
+                    }
+                    viewModel.reportCreation = false;
+                    addToSkipList(response.data.Id);
+                    toastr.success("Success");
+                }, function () {
+                    viewModel.reportCreation = false;
+                });
             };
+        vm.isAuthenticated = membershipProvider.isAuthenticated();
         vm.loadMore = function () {
             vm.nextPageLoading = true;
             dataContext.nextPage(vm.lastDate, mineOnly).then(function (response) {
@@ -84,7 +108,6 @@
                 vm.reports = vm.reports ? vm.reports.concat(model.Reports) : model.Reports;
                 vm.hasMore = true;
                 vm.lastDate = model.LastDate;
-                toastr.success("Success");
             }, function () {
                 vm.nextPageLoading = false;
             });
@@ -112,7 +135,6 @@
                     vm.firstDate = model.FirstDate;
                 }
                 skipReports = null;
-                toastr.success("Success");
             }, function () {
                 vm.newReportsLoading = false;
             });
@@ -127,20 +149,15 @@
                 return;
             }
             vm.reportCreation = true;
-            dataContext.postReport(vm.userId).then(function (response) {
-                if (!vm.reports) {
-                    vm.reports = [response.data];
-                }
-                else {
-                    vm.reports.unshift(response.data);
-                }
-                vm.reportCreation = false;
-                addToSkipList(response.data.Id);
-                toastr.success("Success");
-            }, function () {
-                vm.reportCreation = false;
-            });
+            onReportCreated(vm, dataContext.postReport(vm.userId));
         };
+        vm.myReport = function () {
+            if (vm.reportCreation) {
+                return;
+            }
+            vm.reportCreation = true;
+            onReportCreated(vm, dataContext.myReport());
+        }
         vm.loadMore();
         return vm;
     }]);
@@ -178,6 +195,19 @@
                         ]
                     }
                 });
+            }
+        };
+    });
+    postAnalyser.directive("naturalInt", function () {
+        return {
+            replace: false,
+            restrict: 'A',
+            require: 'ngModel',            
+            link: function(scope, element, attributes, ngModel) {
+                ngModel.$validators.naturalInt = function (modelValue) {
+                    var intValue = parseInt(modelValue, 10);
+                    return modelValue === intValue && intValue > 0;
+                };
             }
         };
     });

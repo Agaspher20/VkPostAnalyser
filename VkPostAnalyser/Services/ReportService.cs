@@ -70,7 +70,7 @@ namespace VkPostAnalyser.Services
                 AuthorId = author == null ? null : (int?)author.Id,
                 CreationDate = currentDate,
                 UserId = userId,
-                PostInfos = allPosts.FilterPosts()
+                PostInfos = allPosts
             };
             _dataContext.UserReports.Add(userReport);
             _dataContext.SaveChanges();

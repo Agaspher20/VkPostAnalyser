@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
-using System.Data.Entity.Validation;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.Services;
 using VkPostAnalyser.Services.Authentication;
 using VkPostAnalyser.Services.VkApi;
-using VKSharp.Helpers.Exceptions;
-using System.Net;
-using System.Collections.Generic;
 
 namespace VkPostAnalyser.Controllers
 {
@@ -72,6 +69,18 @@ namespace VkPostAnalyser.Controllers
                 user = null;
             }
             report = await _reportService.CreateReportAsync(order.UserId.Value, user);
+            string uri = Url.Link("DefaultApi", new { id = report.AuthorId });
+            return Created<UserReport>(uri, report);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VkExceptionFilter]
+        public async Task<IHttpActionResult> ReportByMe()
+        {
+            int userId = int.Parse(User.Identity.GetUserId());
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            UserReport report = await _reportService.CreateReportAsync(userId, user);
             string uri = Url.Link("DefaultApi", new { id = report.AuthorId });
             return Created<UserReport>(uri, report);
         }
