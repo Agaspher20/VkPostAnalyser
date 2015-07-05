@@ -93,9 +93,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ServiceBus">
+      <HintPath>..\packages\WindowsAzure.ServiceBus.2.7.3\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -119,6 +125,8 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -1012,6 +1020,7 @@
     <Compile Include="App_Start\Startup.WebApiConfig.cs" />
     <Compile Include="App_Start\Startup.DependencyInjectionConfig.cs" />
     <Compile Include="App_Start\Startup.AuthConfig.cs" />
+    <Compile Include="Configuration\ServiceBusConfiguration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -1019,12 +1028,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Model\ExternalLoginListViewModel.cs" />
+    <Compile Include="ServiceBus\ReportsQueueConnector.cs" />
     <Compile Include="Services\Authentication\ApplicationSignInManager.cs" />
     <Compile Include="Services\Authentication\ApplicationUser.cs" />
     <Compile Include="Services\Authentication\ApplicationUserManager.cs" />
     <Compile Include="Services\Authentication\ApplicationUserStore.cs" />
     <Compile Include="Services\Authentication\ChallengeResult.cs" />
-    <Compile Include="Misc\VkConfiguration.cs" />
+    <Compile Include="Configuration\VkConfiguration.cs" />
     <Compile Include="Model\PostInfo.cs" />
     <Compile Include="Model\ReportOrder.cs" />
     <Compile Include="Model\ReportsViewModel.cs" />

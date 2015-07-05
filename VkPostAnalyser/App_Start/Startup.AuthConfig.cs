@@ -16,7 +16,7 @@ namespace VkPostAnalyser
     {
         private void ConfigureAuth(IAppBuilder app)
         {
-            var authConfig = (VkConfiguration)ConfigurationManager.GetSection("vkConfiguration");
+            var authConfig = (VkConfiguration)ConfigurationManager.GetSection(VkConfiguration.SectionName);
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,

@@ -9,10 +9,13 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
 using Owin;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Reflection;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
+using VkPostAnalyser.Configuration;
+using VkPostAnalyser.ServiceBus;
 using VkPostAnalyser.Services;
 using VkPostAnalyser.Services.Authentication;
 using VkPostAnalyser.Services.VkApi;
@@ -50,6 +53,7 @@ namespace VkPostAnalyser
 
             var dataProtectionProvider = app.GetDataProtectionProvider();
 
+            builder.Register<IReportsQueueConnector>(BuildReportsQueueConnector).InstancePerRequest();
             builder.RegisterType<DataContext>().InstancePerRequest();
             builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, int>>().InstancePerRequest();
             builder.RegisterType<ApplicationUserStore>().As<IUserStore<ApplicationUser, int>>().InstancePerRequest();
@@ -57,6 +61,12 @@ namespace VkPostAnalyser
             builder.RegisterType<VkApiProvider>().As<ISocialApiProvider>().InstancePerRequest();
             builder.RegisterType<ReportService>().As<IReportService>().InstancePerRequest();
             builder.RegisterType<ApplicationSignInManager>().As<SignInManager<ApplicationUser, int>>().InstancePerRequest();
+        }
+
+        private IReportsQueueConnector BuildReportsQueueConnector(IComponentContext arg, IEnumerable<Parameter> parameters)
+        {
+            var serviceBusConfig = (ServiceBusConfiguration)ConfigurationManager.GetSection(ServiceBusConfiguration.SectionName);
+            return new ReportsQueueConnector(serviceBusConfig);
         }
 
         private ApplicationUserManager BuildUserManager(IComponentContext context, IEnumerable<Parameter> parameters, IDataProtectionProvider dataProtectionProvider)

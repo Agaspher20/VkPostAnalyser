@@ -5,6 +5,8 @@ namespace VkPostAnalyser.Misc
 {
     public class VkConfiguration : ConfigurationSection
     {
+        public const string SectionName = "vkConfiguration";
+
         [ConfigurationProperty("applicationId", IsRequired = true)]
         public int ApplicationId
         {

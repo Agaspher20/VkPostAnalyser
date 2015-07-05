@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Microsoft.ServiceBus.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VkPostAnalyser.Model;
+using VkPostAnalyser.ServiceBus;
 using VkPostAnalyser.Services.Authentication;
 
 namespace VkPostAnalyser.Services
@@ -20,11 +22,13 @@ namespace VkPostAnalyser.Services
     {
         private readonly DataContext _dataContext;
         private readonly ISocialApiProvider _socialApiProvider;
+        private readonly IReportsQueueConnector _reportsQueueConnector;
 
-        public ReportService(DataContext dataContext, ISocialApiProvider socialApiProvider)
+        public ReportService(DataContext dataContext, ISocialApiProvider socialApiProvider, IReportsQueueConnector reportsQueueConnector)
         {
             _dataContext = dataContext;
             _socialApiProvider = socialApiProvider;
+            _reportsQueueConnector = reportsQueueConnector;
         }
 
         public ReportsViewModel NextReportsPage(int? authorId, DateTime? date, int pageSize)
@@ -63,19 +67,29 @@ namespace VkPostAnalyser.Services
 
         public async Task<UserReport> CreateReportAsync(int userId, ApplicationUser author)
         {
-            DateTime currentDate = DateTime.Now;
-            IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userId, author);
-            var userReport = new UserReport
+            // Create a message from the order
+            var message = new BrokeredMessage(new ServiceBusReportOrder
             {
-                AuthorId = author == null ? null : (int?)author.Id,
-                CreationDate = currentDate,
                 UserId = userId,
-                PostInfos = allPosts
-            };
-            _dataContext.UserReports.Add(userReport);
-            _dataContext.SaveChanges();
-            InitUserReport(userReport);
-            return userReport;
+                Author = author
+            });
+
+            // Submit the order
+            await _reportsQueueConnector.ReportsQueueClient.SendAsync(message);
+            return new UserReport();
+            //DateTime currentDate = DateTime.Now;
+            //IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userId, author);
+            //var userReport = new UserReport
+            //{
+            //    AuthorId = author == null ? null : (int?)author.Id,
+            //    CreationDate = currentDate,
+            //    UserId = userId,
+            //    PostInfos = allPosts
+            //};
+            //_dataContext.UserReports.Add(userReport);
+            //_dataContext.SaveChanges();
+            //InitUserReport(userReport);
+            //return userReport;
         }
 
         private ReportsViewModel BuildReportsModel(IList<UserReport> reports, int pageSize = int.MaxValue)
