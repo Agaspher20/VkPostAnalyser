@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace VkPostAnalyser.Model
+namespace VkPostAnalyser.Domain.Model
 {
     public class UserReport
     {

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.ServiceBus;
-using VkPostAnalyser.Services.Authentication;
 
 namespace VkPostAnalyser.Services
 {

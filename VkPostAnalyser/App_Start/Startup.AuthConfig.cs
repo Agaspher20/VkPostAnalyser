@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
-using System.Linq;
 using System.Configuration;
+using System.Linq;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Misc;
-using VkPostAnalyser.Services.Authentication;
 using VkPostAnalyser.Services.VkApi.AuthProvider;
 
 namespace VkPostAnalyser

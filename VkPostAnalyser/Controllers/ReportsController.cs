@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.Services;
-using VkPostAnalyser.Services.Authentication;
 using VkPostAnalyser.Services.VkApi;
 
 namespace VkPostAnalyser.Controllers

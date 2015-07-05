@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VkPostAnalyser.Model;
-using VkPostAnalyser.Services.Authentication;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Services.VkApi.AuthProvider;
 using VKSharp;
 using VKSharp.Core.Entities;

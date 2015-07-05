@@ -15,6 +15,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using VkPostAnalyser.Configuration;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.ServiceBus;
 using VkPostAnalyser.Services;
 using VkPostAnalyser.Services.Authentication;

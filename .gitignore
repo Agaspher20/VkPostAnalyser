@@ -5,3 +5,8 @@ VkPostAnalyser/bin/
 *.user
 VkPostAnalyser/obj/
 VkPostAnalyser/Properties/PublishProfiles/
+ReportOrderProcessor/bin/
+ReportOrderProcessor/obj/
+ReportAnalyticsService/obj/
+VkPostAnalyser.Domain/obj/
+VkPostAnalyser.Domain/bin/

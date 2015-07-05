@@ -1028,17 +1028,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Model\ExternalLoginListViewModel.cs" />
+    <Compile Include="Model\ReportsViewModel.cs" />
     <Compile Include="ServiceBus\ReportsQueueConnector.cs" />
     <Compile Include="Services\Authentication\ApplicationSignInManager.cs" />
-    <Compile Include="Services\Authentication\ApplicationUser.cs" />
     <Compile Include="Services\Authentication\ApplicationUserManager.cs" />
     <Compile Include="Services\Authentication\ApplicationUserStore.cs" />
     <Compile Include="Services\Authentication\ChallengeResult.cs" />
     <Compile Include="Configuration\VkConfiguration.cs" />
-    <Compile Include="Model\PostInfo.cs" />
-    <Compile Include="Model\ReportOrder.cs" />
-    <Compile Include="Model\ReportsViewModel.cs" />
-    <Compile Include="Model\UserReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\LocalizationStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1069,6 +1065,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VkPostAnalyser.Domain\VkPostAnalyser.Domain.csproj">
+      <Project>{c642cc48-81c0-42fb-9426-bc0ad5d2afa3}</Project>
+      <Name>VkPostAnalyser.Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

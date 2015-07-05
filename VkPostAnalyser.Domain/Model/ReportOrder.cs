@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using VkPostAnalyser.Resources;
-using VkPostAnalyser.Services.Authentication;
 
-namespace VkPostAnalyser.Model
+namespace VkPostAnalyser.Domain.Model
 {
     public class ReportOrder
     {
-        [Required(ErrorMessageResourceName = "UserIdRequired", ErrorMessageResourceType=typeof(LocalizationStrings))]
+        [Required]
         [Range(1, int.MaxValue)]
         public int? UserId { get; set; }
     }

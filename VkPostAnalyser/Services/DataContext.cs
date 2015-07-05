@@ -1,5 +1,5 @@
 ﻿using System.Data.Entity;
-using VkPostAnalyser.Model;
+using VkPostAnalyser.Domain.Model;
 
 namespace VkPostAnalyser.Services
 {

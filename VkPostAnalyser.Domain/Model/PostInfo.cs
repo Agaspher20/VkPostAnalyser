@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace VkPostAnalyser.Model
+
+namespace VkPostAnalyser.Domain.Model
 {
     public class PostInfo
     {

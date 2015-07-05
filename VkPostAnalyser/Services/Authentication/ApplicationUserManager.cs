@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
+using VkPostAnalyser.Domain.Model;
 
 namespace VkPostAnalyser.Services.Authentication
 {

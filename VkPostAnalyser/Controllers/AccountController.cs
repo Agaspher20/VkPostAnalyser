@@ -3,6 +3,7 @@ using Microsoft.Owin.Security;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Model;
 using VkPostAnalyser.Services.Authentication;
 

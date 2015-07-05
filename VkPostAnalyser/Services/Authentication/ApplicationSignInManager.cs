@@ -3,6 +3,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Services.VkApi.AuthProvider;
 
 namespace VkPostAnalyser.Services.Authentication

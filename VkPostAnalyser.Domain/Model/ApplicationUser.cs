@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 
-namespace VkPostAnalyser.Services.Authentication
+namespace VkPostAnalyser.Domain.Model
 {
     public class ApplicationUser : IUser<int>
     {
