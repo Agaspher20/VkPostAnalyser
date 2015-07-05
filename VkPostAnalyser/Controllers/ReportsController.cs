@@ -49,9 +49,8 @@ namespace VkPostAnalyser.Controllers
 
         [HttpPost]
         [VkExceptionFilter]
-        public async Task<IHttpActionResult> Post(ReportOrder order)
+        public async Task<IHttpActionResult> OrderReport(ReportOrder order)
         {
-            UserReport report;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -67,9 +66,8 @@ namespace VkPostAnalyser.Controllers
             {
                 user = null;
             }
-            report = await _reportService.CreateReportAsync(order.UserId.Value, user);
-            string uri = Url.Link("DefaultApi", new { id = report.AuthorId });
-            return Created<UserReport>(uri, report);
+            await _reportService.CreateReportAsync(order.UserId.Value, user);
+            return Ok();
         }
 
         [HttpPost]
@@ -79,9 +77,8 @@ namespace VkPostAnalyser.Controllers
         {
             int userId = int.Parse(User.Identity.GetUserId());
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
-            UserReport report = await _reportService.CreateReportAsync(userId, user);
-            string uri = Url.Link("DefaultApi", new { id = report.AuthorId });
-            return Created<UserReport>(uri, report);
+            await _reportService.CreateReportAsync(userId, user);
+            return Ok();
         }
     }
 }

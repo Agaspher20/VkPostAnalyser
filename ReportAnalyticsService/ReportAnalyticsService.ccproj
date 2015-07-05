@@ -45,12 +45,22 @@
       <RoleName>ReportOrderProcessor</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
+    <ProjectReference Include="..\VkPostAnalyser\VkPostAnalyser.csproj">
+      <Name>VkPostAnalyser</Name>
+      <Project>{602ec1c7-360d-45e9-b898-4a772af0bda4}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>VkPostAnalyser</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ReportOrderProcessorContent\" />
+    <Folder Include="VkPostAnalyserContent\" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="ReportOrderProcessorContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="VkPostAnalyserContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

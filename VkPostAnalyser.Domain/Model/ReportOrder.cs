@@ -8,9 +8,4 @@ namespace VkPostAnalyser.Domain.Model
         [Range(1, int.MaxValue)]
         public int? UserId { get; set; }
     }
-
-    public class ServiceBusReportOrder : ReportOrder
-    {
-        public ApplicationUser Author { get; set; }
-    }
 }

@@ -13,7 +13,7 @@ namespace VkPostAnalyser.Domain.Services
 
         ReportsViewModel RetrieveNewReports(int? authorId, DateTime date, IList<int> skipIds);
 
-        Task<UserReport> CreateReportAsync(int userId, ApplicationUser user);
+        Task CreateReportAsync(int userId, ApplicationUser user);
     }
 
     public class ReportService : IReportService
@@ -63,7 +63,7 @@ namespace VkPostAnalyser.Domain.Services
             return BuildReportsModel(reportsQuery.ToList());
         }
 
-        public async Task<UserReport> CreateReportAsync(int userId, ApplicationUser author)
+        public async Task CreateReportAsync(int userId, ApplicationUser author)
         {
             // Create a message from the order
             var message = new BrokeredMessage(new ServiceBusReportOrder
@@ -74,20 +74,6 @@ namespace VkPostAnalyser.Domain.Services
 
             // Submit the order
             await _reportsQueueConnector.ReportsQueueClient.SendAsync(message);
-            return new UserReport();
-            //DateTime currentDate = DateTime.Now;
-            //IList<PostInfo> allPosts = await _socialApiProvider.RetrievePostInfosAsync(userId, author);
-            //var userReport = new UserReport
-            //{
-            //    AuthorId = author == null ? null : (int?)author.Id,
-            //    CreationDate = currentDate,
-            //    UserId = userId,
-            //    PostInfos = allPosts
-            //};
-            //_dataContext.UserReports.Add(userReport);
-            //_dataContext.SaveChanges();
-            //InitUserReport(userReport);
-            //return userReport;
         }
 
         private ReportsViewModel BuildReportsModel(IList<UserReport> reports, int pageSize = int.MaxValue)

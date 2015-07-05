@@ -11,3 +11,6 @@ ReportAnalyticsService/obj/
 VkPostAnalyser.Domain/obj/
 VkPostAnalyser.Domain/bin/
 ReportAnalyticsService/bin/
+ReportAnalyticsService/VkPostAnalyserContent/
+ReportAnalyticsService/ecf/
+ReportAnalyticsService/csx/

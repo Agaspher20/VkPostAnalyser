@@ -34,17 +34,19 @@ namespace VkPostAnalyser.Services.Authentication
             ));
         }
 
-        public async Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user)
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user)
         {
-            return new List<UserLoginInfo>(0);
+            return Task.Run<IList<UserLoginInfo>>(() => new List<UserLoginInfo>(0));
         }
 
-        public async Task CreateAsync(ApplicationUser user)
+        public Task CreateAsync(ApplicationUser user)
         {
+            return Task.Run(() => { });
         }
 
-        public async Task DeleteAsync(ApplicationUser user)
+        public Task DeleteAsync(ApplicationUser user)
         {
+            return Task.Run(() => { });
         }
 
         public async Task<ApplicationUser> FindByIdAsync(int userId)
@@ -55,87 +57,162 @@ namespace VkPostAnalyser.Services.Authentication
             )) ?? await RetrieveUserFromExternalClaimIdentity(new UserLoginInfo(
                 loginProvider: DefaultAuthenticationTypes.ExternalCookie,
                 providerKey: userId.ToString()
-            ));//todo: implement to get from application store
+            ));
         }
 
-        public async Task<ApplicationUser> FindByNameAsync(string userName)
+        public Task<ApplicationUser> FindByNameAsync(string userName)
         {
             return null;
         }
 
-        public async Task UpdateAsync(ApplicationUser user)
+        public Task UpdateAsync(ApplicationUser user)
         {
+            return Task.Run(() => { });
         }
 
         public void Dispose() { }
 
-        public async Task AddLoginAsync(ApplicationUser user, UserLoginInfo login)
-        {   
-        }
-
-        public async Task RemoveLoginAsync(ApplicationUser user, UserLoginInfo login)
+        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login)
         {
+            return Task.Run(() => { });
         }
 
-        public async Task AddToRoleAsync(ApplicationUser user, string roleName) { }
-
-        public async Task<IList<string>> GetRolesAsync(ApplicationUser user) { return new List<string>(); }
-
-        public async Task<bool> IsInRoleAsync(ApplicationUser user, string roleName) { return false; }
-
-        public async Task RemoveFromRoleAsync(ApplicationUser user, string roleName) { }
-
-        public async Task<string> GetPasswordHashAsync(ApplicationUser user) { return string.Empty; }
-
-        public async Task<bool> HasPasswordAsync(ApplicationUser user) { return false; }
-
-        public async Task SetPasswordHashAsync(ApplicationUser user, string passwordHash) { }
-
-        public async Task<string> GetSecurityStampAsync(ApplicationUser user)
+        public Task RemoveLoginAsync(ApplicationUser user, UserLoginInfo login)
         {
-            var stamp = Guid.NewGuid().ToByteArray();
-            return Convert.ToBase64String(stamp, 0, stamp.Length);
+            return Task.Run(() => { });
         }
 
-        public async Task SetSecurityStampAsync(ApplicationUser user, string stamp) { }
+        public Task AddToRoleAsync(ApplicationUser user, string roleName)
+        {
+            return Task.Run(() => { });
+        }
+
+        public Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            return Task.Run<IList<string>>(() => new List<string>());
+        }
+
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName) { return Task.Run(() => false); }
+
+        public Task RemoveFromRoleAsync(ApplicationUser user, string roleName)
+        {
+            return Task.Run(() => { });
+        }
+
+        public Task<string> GetPasswordHashAsync(ApplicationUser user)
+        {
+            return Task.Run(() => string.Empty);
+        }
+
+        public Task<bool> HasPasswordAsync(ApplicationUser user)
+        {
+            return Task.Run(() => false);
+        }
+
+        public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash)
+        {
+            return Task.Run(() => { });
+        }
+
+        public Task<string> GetSecurityStampAsync(ApplicationUser user)
+        {
+            return Task.Run(() =>
+            {
+                var stamp = Guid.NewGuid().ToByteArray();
+                return Convert.ToBase64String(stamp, 0, stamp.Length);
+            });
+        }
+
+        public Task SetSecurityStampAsync(ApplicationUser user, string stamp)
+        {
+            return Task.Run(() => { });
+        }
 
         public IQueryable<ApplicationUser> Users { get { return null; } }
 
-        public async Task<ApplicationUser> FindByEmailAsync(string email) { return null; }
+        public Task<ApplicationUser> FindByEmailAsync(string email) { return null; }
 
-        public async Task<string> GetEmailAsync(ApplicationUser user) { return null; }
+        public Task<string> GetEmailAsync(ApplicationUser user) { return null; }
 
-        public async Task<bool> GetEmailConfirmedAsync(ApplicationUser user) { return false; }
+        public Task<bool> GetEmailConfirmedAsync(ApplicationUser user)
+        {
+            return Task.Run(() => false);
+        }
 
-        public async Task SetEmailAsync(ApplicationUser user, string email) { }
+        public Task SetEmailAsync(ApplicationUser user, string email)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task SetEmailConfirmedAsync(ApplicationUser user, bool confirmed) { }
+        public Task SetEmailConfirmedAsync(ApplicationUser user, bool confirmed)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task<string> GetPhoneNumberAsync(ApplicationUser user) { return null; }
+        public Task<string> GetPhoneNumberAsync(ApplicationUser user)
+        {
+            return Task.Run(() => string.Empty);
+        }
 
-        public async Task<bool> GetPhoneNumberConfirmedAsync(ApplicationUser user) { return false; }
+        public Task<bool> GetPhoneNumberConfirmedAsync(ApplicationUser user)
+        {
+            return Task.Run(() => false);
+        }
 
-        public async Task SetPhoneNumberAsync(ApplicationUser user, string phoneNumber) { }
+        public Task SetPhoneNumberAsync(ApplicationUser user, string phoneNumber)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task SetPhoneNumberConfirmedAsync(ApplicationUser user, bool confirmed) { }
+        public Task SetPhoneNumberConfirmedAsync(ApplicationUser user, bool confirmed)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task<bool> GetTwoFactorEnabledAsync(ApplicationUser user) { return false; }
+        public Task<bool> GetTwoFactorEnabledAsync(ApplicationUser user)
+        {
+            return Task.Run(() => false);
+        }
 
-        public async Task SetTwoFactorEnabledAsync(ApplicationUser user, bool enabled) { }
+        public Task SetTwoFactorEnabledAsync(ApplicationUser user, bool enabled)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task<int> GetAccessFailedCountAsync(ApplicationUser user) { return 0; }
+        public Task<int> GetAccessFailedCountAsync(ApplicationUser user)
+        {
+            return Task.Run(() => 0);
+        }
 
-        public async Task<bool> GetLockoutEnabledAsync(ApplicationUser user) { return false; }
+        public Task<bool> GetLockoutEnabledAsync(ApplicationUser user)
+        {
+            return Task.Run(() => false);
+        }
 
-        public async Task<DateTimeOffset> GetLockoutEndDateAsync(ApplicationUser user) { return DateTimeOffset.MinValue; }
+        public Task<DateTimeOffset> GetLockoutEndDateAsync(ApplicationUser user)
+        {
+            return Task.Run(() => DateTimeOffset.MinValue);
+        }
 
-        public async Task<int> IncrementAccessFailedCountAsync(ApplicationUser user) { return 0; }
+        public Task<int> IncrementAccessFailedCountAsync(ApplicationUser user)
+        {
+            return Task.Run(() => 0);
+        }
 
-        public async Task ResetAccessFailedCountAsync(ApplicationUser user) { }
+        public Task ResetAccessFailedCountAsync(ApplicationUser user)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task SetLockoutEnabledAsync(ApplicationUser user, bool enabled) { }
+        public Task SetLockoutEnabledAsync(ApplicationUser user, bool enabled)
+        {
+            return Task.Run(() => { });
+        }
 
-        public async Task SetLockoutEndDateAsync(ApplicationUser user, System.DateTimeOffset lockoutEnd) { }
+        public Task SetLockoutEndDateAsync(ApplicationUser user, System.DateTimeOffset lockoutEnd)
+        {
+            return Task.Run(() => { });
+        }
 
         private async Task<ApplicationUser> RetrieveUserFromExternalClaimIdentity(UserLoginInfo login)
         {

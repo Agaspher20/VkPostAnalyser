@@ -53,7 +53,7 @@
                 return retrieveReports("NewReports", firstDate, mineOnly, skipReports);
             },
             postReport: function (userId) {
-                return $http.post("/api/Reports/Post", { UserId: userId });
+                return $http.post("/api/Reports/OrderReport", { UserId: userId });
             }
         };
     }]);
