@@ -1,21 +1,22 @@
-﻿using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
-using Microsoft.WindowsAzure;
+﻿using Microsoft.ServiceBus.Messaging;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using VkPostAnalyser.Domain.Configuration;
+using VkPostAnalyser.Domain.Model;
 using VkPostAnalyser.Domain.Services;
+using VkPostAnalyser.Domain.Services.VkApi;
 
 namespace ReportOrderProcessor
 {
     public class WorkerRole : RoleEntryPoint
     {
         private QueueClient _reportsQueueClient;
-
-        ManualResetEvent CompletedEvent = new ManualResetEvent(false);
+        private IReportBuilder _reportBuilder;
+        private ManualResetEvent _completedEvent = new ManualResetEvent(false);
 
         public override void Run()
         {
@@ -28,14 +29,20 @@ namespace ReportOrderProcessor
                     {
                         // Process the message
                         Trace.WriteLine("Processing Service Bus message: " + receivedMessage.SequenceNumber.ToString());
+                        var reportOrder = receivedMessage.GetBody<ServiceBusReportOrder>();
+                        _reportBuilder.BuildReportAsync(reportOrder).Wait();
+                        receivedMessage.Complete();
                     }
-                    catch
+                    catch(Exception exc)
                     {
-                        // Handle any message processing specific exceptions here
+                        Trace.TraceError("Exception has bee thrown on reading posts.\n"
+                            + "Exception type: {0}\n"
+                            + "Exception message: {1}\n"
+                            + "Stack trace: {2}", exc.GetType(), exc.Message, exc.StackTrace);
                     }
                 });
 
-            CompletedEvent.WaitOne();
+            _completedEvent.WaitOne();
         }
 
         public override bool OnStart()
@@ -44,6 +51,8 @@ namespace ReportOrderProcessor
             ServicePointManager.DefaultConnectionLimit = 12;
             var reportsQueueConnector = BuildReportsQueueConnector();
             _reportsQueueClient = reportsQueueConnector.ReportsQueueClient;
+
+            _reportBuilder = new ReportBuilder(new DataContext(), new VkApiProvider());
             return base.OnStart();
         }
 
@@ -51,7 +60,7 @@ namespace ReportOrderProcessor
         {
             // Close the connection to Service Bus Queue
             _reportsQueueClient.Close();
-            CompletedEvent.Set();
+            _completedEvent.Set();
             base.OnStop();
         }
 
