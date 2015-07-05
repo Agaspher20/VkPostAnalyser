@@ -11,7 +11,7 @@ namespace VkPostAnalyser.Domain.Services
     {
         ReportsViewModel NextReportsPage(int? authorId, DateTime? date, int pageSize);
 
-        ReportsViewModel RetrieveNewReports(int? authorId, DateTime date, IList<int> skipIds);
+        ReportsViewModel RetrieveNewReports(int? authorId, DateTime date);
 
         Task CreateReportAsync(int userId, ApplicationUser user);
     }
@@ -45,16 +45,12 @@ namespace VkPostAnalyser.Domain.Services
             return BuildReportsModel(reportsQuery.ToList(), pageSize);
         }
 
-        public ReportsViewModel RetrieveNewReports(int? authorId, DateTime date, IList<int> skipIds)
+        public ReportsViewModel RetrieveNewReports(int? authorId, DateTime date)
         {
             IQueryable<UserReport> reportsQuery = _dataContext.UserReports.Include("PostInfos");
             if (authorId.HasValue)
             {
                 reportsQuery = reportsQuery.Where(r => r.AuthorId == authorId.Value);
-            }
-            if (skipIds != null && skipIds.Any())
-            {
-                reportsQuery = reportsQuery.Where(r => !skipIds.Contains(r.Id));
             }
             reportsQuery = reportsQuery
                 .Where(r => r.CreationDate > date)

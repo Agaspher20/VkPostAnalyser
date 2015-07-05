@@ -18,7 +18,7 @@
         <button data-ng-click="vm.myReport()" data-ng-if="vm.isAuthenticated">Report Me</button>
         <button data-ng-click="vm.update()">Update</button>
     </div>
-    <div class="row" data-ng-show="vm.reportCreation">Creating new report...</div>
+    <div class="row" data-ng-show="vm.reportCreation">Ordering new report...</div>
     <div class="row" data-ng-show="vm.newReportsLoading">loading...</div>
     <div class="row" data-ng-repeat="report in vm.reports">
         <div class="row">User Id: {{report.UserId}}</div>

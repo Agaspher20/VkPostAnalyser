@@ -15,7 +15,6 @@ namespace ReportOrderProcessor
     public class WorkerRole : RoleEntryPoint
     {
         private QueueClient _reportsQueueClient;
-        private IReportBuilder _reportBuilder;
         private ManualResetEvent _completedEvent = new ManualResetEvent(false);
 
         public override void Run()
@@ -30,7 +29,8 @@ namespace ReportOrderProcessor
                         // Process the message
                         Trace.WriteLine("Processing Service Bus message: " + receivedMessage.SequenceNumber.ToString());
                         var reportOrder = receivedMessage.GetBody<ServiceBusReportOrder>();
-                        _reportBuilder.BuildReportAsync(reportOrder).Wait();
+                        var reportBuilder = InitReportBuilder();
+                        reportBuilder.BuildReportAsync(reportOrder).Wait();
                         receivedMessage.Complete();
                     }
                     catch(Exception exc)
@@ -52,7 +52,6 @@ namespace ReportOrderProcessor
             var reportsQueueConnector = BuildReportsQueueConnector();
             _reportsQueueClient = reportsQueueConnector.ReportsQueueClient;
 
-            _reportBuilder = new ReportBuilder(new DataContext(), new VkApiProvider());
             return base.OnStart();
         }
 
@@ -62,6 +61,11 @@ namespace ReportOrderProcessor
             _reportsQueueClient.Close();
             _completedEvent.Set();
             base.OnStop();
+        }
+
+        private IReportBuilder InitReportBuilder()
+        {
+            return new ReportBuilder(new DataContext(), new VkApiProvider());
         }
 
         private IReportsQueueConnector BuildReportsQueueConnector()

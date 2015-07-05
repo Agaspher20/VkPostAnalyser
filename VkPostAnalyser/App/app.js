@@ -29,19 +29,10 @@
         });
     }]);
     postAnalyser.factory("dataContext", ["$http", function ($http) {
-        var retrieveReports = function (action, date, mineOnly, skipIds) {
-            var query = "/api/Reports/" + action + "?mineOnly=" + !!mineOnly, i, skipIdsLength;
+        var retrieveReports = function (action, date, mineOnly) {
+            var query = "/api/Reports/" + action + "?mineOnly=" + !!mineOnly;
             if (date) {
                 query += "&date=" + date;
-            }
-            if (skipIds && skipIds.length) {
-                skipIdsLength = skipIds.length;
-                for (i = 0; i < skipIdsLength; ++i) {
-                    if (query.length > 2000) {
-                        break;
-                    }
-                    query += "&skipIds=" + skipIds[i];
-                }
             }
             return $http.get(query, { cache: false });
         };
@@ -49,10 +40,10 @@
             nextPage: function (lastDate, mineOnly) {
                 return retrieveReports("NextPage", lastDate, mineOnly);
             },
-            newReports: function (firstDate, skipReports, mineOnly) {
-                return retrieveReports("NewReports", firstDate, mineOnly, skipReports);
+            newReports: function (firstDate, mineOnly) {
+                return retrieveReports("NewReports", firstDate, mineOnly);
             },
-            postReport: function (userId) {
+            orderReport: function (userId) {
                 return $http.post("/api/Reports/OrderReport", { UserId: userId });
             }
         };
@@ -67,26 +58,10 @@
     }]);
     postAnalyser.controller("reportsListController", ["$routeParams", "dataContext", "membershipProvider", function ($routeParams, dataContext, membershipProvider) {
         var vm = this, mineOnly = $routeParams.mineOnly && ($routeParams.mineOnly === "myReports"),
-            skipReports,
-            addToSkipList = function (reportId) {
-                if (skipReports) {
-                    skipReports.push(reportId);
-                }
-                else {
-                    skipReports = [reportId];
-                }
-            },
-            onReportCreated = function (viewModel, reportPromise) {
+            onReportOrdered = function (viewModel, reportPromise) {
                 reportPromise.then(function (response) {
-                    if (!viewModel.reports) {
-                        viewModel.reports = [response.data];
-                    }
-                    else {
-                        viewModel.reports.unshift(response.data);
-                    }
                     viewModel.reportCreation = false;
-                    addToSkipList(response.data.Id);
-                    toastr.success("Success");
+                    toastr.success("Report ordered successfully. It will appear on the public thread when will be ready.");
                 }, function () {
                     viewModel.reportCreation = false;
                 });
@@ -118,7 +93,7 @@
                 return;
             }
             vm.newReportsLoading = true;
-            dataContext.newReports(vm.firstDate, skipReports, mineOnly).then(function (response) {
+            dataContext.newReports(vm.firstDate, mineOnly).then(function (response) {
                 var model = response.data;
                 vm.newReportsLoading = false;
                 if (response.status === 204) {
@@ -134,7 +109,6 @@
                 if (model.FirstDate) {
                     vm.firstDate = model.FirstDate;
                 }
-                skipReports = null;
             }, function () {
                 vm.newReportsLoading = false;
             });
@@ -149,7 +123,7 @@
                 return;
             }
             vm.reportCreation = true;
-            onReportCreated(vm, dataContext.postReport(vm.userId));
+            onReportOrdered(vm, dataContext.orderReport(vm.userId));
         };
         vm.myReport = function () {
             if (vm.reportCreation) {

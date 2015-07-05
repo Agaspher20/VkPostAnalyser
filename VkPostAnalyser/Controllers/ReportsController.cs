@@ -40,9 +40,9 @@ namespace VkPostAnalyser.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult NewReports(DateTime date, bool mineOnly = false, [FromUri]int[] skipIds = null)
+        public IHttpActionResult NewReports(DateTime date, bool mineOnly = false)
         {
-            var reportsModel = _reportService.RetrieveNewReports(null, date, skipIds);
+            var reportsModel = _reportService.RetrieveNewReports(null, date);
             var status = !reportsModel.Reports.Any() ? HttpStatusCode.NoContent : HttpStatusCode.OK;
             return Content<ReportsViewModel>(status, reportsModel);
         }
