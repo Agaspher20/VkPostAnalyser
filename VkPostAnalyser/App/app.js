@@ -9,14 +9,17 @@
                     return response;
                 },
                 responseError: function (response) {
-                    if (response.status === 401) {
-                        window.location = "/Account/Login";
+                    var message;
+                    if (response.status) {
+                        if (response.status === 401) {
+                            window.location = "/Account/Login";
+                        }
+                        message = "Error " + response.status;
+                        if (response.data) {
+                            message += ": " + (response.data.Message || response.data);
+                        }
+                        toastr.error(message);
                     }
-                    var message = "Error " + response.status;
-                    if (response.data) {
-                        message += ": " + (response.data.Message || response.data);
-                    }
-                    toastr.error(message);
                     return $q.reject(response);
                 }
             };
@@ -51,7 +54,6 @@
     postAnalyser.factory("membershipProvider", ["$cookies", function ($cookies) {
         return {
             isAuthenticated: function () {
-                console.log($cookies.get(".AspNet.ApplicationCookie"));
                 return !!$cookies.get(".AspNet.ApplicationCookie");
             }
         };
