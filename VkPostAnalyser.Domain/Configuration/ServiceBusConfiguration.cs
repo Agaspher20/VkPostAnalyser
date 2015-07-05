@@ -1,8 +1,6 @@
-﻿using Microsoft.ServiceBus;
-using System;
-using System.Configuration;
+﻿using System.Configuration;
 
-namespace VkPostAnalyser.Configuration
+namespace VkPostAnalyser.Domain.Configuration
 {
     public class ServiceBusConfiguration : ConfigurationSection
     {

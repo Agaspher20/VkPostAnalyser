@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using VkPostAnalyser.Domain.Model;
 
-namespace VkPostAnalyser.Services
+namespace VkPostAnalyser.Domain.Services
 {
     public interface ISocialApiProvider
     {

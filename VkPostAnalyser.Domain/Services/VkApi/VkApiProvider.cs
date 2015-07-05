@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using VkPostAnalyser.Domain.Model;
-using VkPostAnalyser.Services.VkApi.AuthProvider;
 using VKSharp;
 using VKSharp.Core.Entities;
 using VKSharp.Data.Api;
 
-namespace VkPostAnalyser.Services.VkApi
+namespace VkPostAnalyser.Domain.Services.VkApi
 {
     public class VkApiProvider : ISocialApiProvider
     {

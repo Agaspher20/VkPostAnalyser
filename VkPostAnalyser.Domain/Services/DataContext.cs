@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
 using VkPostAnalyser.Domain.Model;
 
-namespace VkPostAnalyser.Services
+namespace VkPostAnalyser.Domain.Services
 {
     public class DataContext : DbContext
     {

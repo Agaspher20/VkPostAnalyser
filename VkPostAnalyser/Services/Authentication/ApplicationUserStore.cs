@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VkPostAnalyser.Domain.Model;
-using VkPostAnalyser.Services.VkApi.AuthProvider;
+using VkPostAnalyser.Domain.Services.VkApi;
 
 namespace VkPostAnalyser.Services.Authentication
 {

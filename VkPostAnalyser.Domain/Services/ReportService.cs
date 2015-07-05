@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VkPostAnalyser.Domain.Model;
-using VkPostAnalyser.Model;
-using VkPostAnalyser.ServiceBus;
 
-namespace VkPostAnalyser.Services
+namespace VkPostAnalyser.Domain.Services
 {
     public interface IReportService
     {

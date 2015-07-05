@@ -2,6 +2,7 @@
 using Microsoft.Owin.Security;
 using System;
 using System.Net.Http;
+using VkPostAnalyser.Domain.Services.VkApi;
 using VKSharp.Data.Api;
 
 namespace VkPostAnalyser.Services.VkApi.AuthProvider
@@ -12,9 +13,9 @@ namespace VkPostAnalyser.Services.VkApi.AuthProvider
             : base(VkConstants.VkAuthenticationType)
         {
             Caption = VkConstants.VkAuthenticationType;
-            CallbackPath = new PathString("/signin-vkontakte");
+            CallbackPath = new PathString(VkConstants.SignInPath);
             AuthenticationMode = AuthenticationMode.Passive;
-            Version = "5.3";
+            Version = VkConstants.ApiVersion;
             BackchannelTimeout = TimeSpan.FromSeconds(60);
         }
         

@@ -83,6 +83,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VkPostAnalyser.Domain\VkPostAnalyser.Domain.csproj">
+      <Project>{c642cc48-81c0-42fb-9426-bc0ad5d2afa3}</Project>
+      <Name>VkPostAnalyser.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -4,7 +4,7 @@ using Microsoft.Owin.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using VkPostAnalyser.Domain.Model;
-using VkPostAnalyser.Services.VkApi.AuthProvider;
+using VkPostAnalyser.Domain.Services.VkApi;
 
 namespace VkPostAnalyser.Services.Authentication
 {

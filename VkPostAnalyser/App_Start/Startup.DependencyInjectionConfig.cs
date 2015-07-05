@@ -14,12 +14,11 @@ using System.Reflection;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
-using VkPostAnalyser.Configuration;
+using VkPostAnalyser.Domain.Configuration;
 using VkPostAnalyser.Domain.Model;
-using VkPostAnalyser.ServiceBus;
-using VkPostAnalyser.Services;
+using VkPostAnalyser.Domain.Services;
+using VkPostAnalyser.Domain.Services.VkApi;
 using VkPostAnalyser.Services.Authentication;
-using VkPostAnalyser.Services.VkApi;
 
 namespace VkPostAnalyser
 {

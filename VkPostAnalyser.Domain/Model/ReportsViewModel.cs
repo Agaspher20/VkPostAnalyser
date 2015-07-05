@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using VkPostAnalyser.Domain.Model;
 
-namespace VkPostAnalyser.Model
+namespace VkPostAnalyser.Domain.Model
 {
     public class ReportsViewModel
     {

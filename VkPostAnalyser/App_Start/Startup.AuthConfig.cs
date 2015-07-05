@@ -5,8 +5,9 @@ using Owin;
 using System;
 using System.Configuration;
 using System.Linq;
+using VkPostAnalyser.Domain.Configuration;
 using VkPostAnalyser.Domain.Model;
-using VkPostAnalyser.Misc;
+using VkPostAnalyser.Domain.Services.VkApi;
 using VkPostAnalyser.Services.VkApi.AuthProvider;
 
 namespace VkPostAnalyser

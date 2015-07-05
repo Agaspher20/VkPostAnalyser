@@ -1,9 +1,9 @@
 ﻿using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using System;
-using VkPostAnalyser.Configuration;
+using VkPostAnalyser.Domain.Configuration;
 
-namespace VkPostAnalyser.ServiceBus
+namespace VkPostAnalyser.Domain.Services
 {
     public interface IReportsQueueConnector
     {

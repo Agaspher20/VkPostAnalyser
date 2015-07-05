@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Xml;
+using VkPostAnalyser.Domain.Services.VkApi;
 using VKSharp.Data.Api;
 
 namespace VkPostAnalyser.Services.VkApi.AuthProvider

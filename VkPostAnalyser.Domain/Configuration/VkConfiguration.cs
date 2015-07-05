@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using VKSharp.Data.Api;
 
-namespace VkPostAnalyser.Misc
+namespace VkPostAnalyser.Domain.Configuration
 {
     public class VkConfiguration : ConfigurationSection
     {
